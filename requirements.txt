@@ -1,0 +1,6 @@
+Flask
+requests
+gunicorn
+flask_sqlalchemy
+Flask-Migrate
+pdfkit

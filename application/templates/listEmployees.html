@@ -1,0 +1,52 @@
+{% extends "layout.html" %}
+
+{% block title %} Employees {% endblock %}
+
+{% block content %}
+        <style>
+            /* input {
+                position: absolute;
+                left: 150px;
+            }
+            
+            select {
+                position: absolute;
+                left: 150px;
+            } */
+        </style>
+        <div class="form1">
+            <h1 style="text-align: center; color: rgb(23, 5, 187);">Employee lists</h1>
+
+            <table >
+        <tr>
+            <th>Photo</th>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Designation</th>
+            <th>Contact</th>
+            <th>Action</th>
+        </tr>
+        {% for employee in employees %}
+        <tr>
+            <td> <img src="/static/ephotos/{{ employee.ephoto }}" height="150px" width="150px"/></td>
+            <td> {{ employee.empid }} </td>
+            <td> {{ employee.ename }} </td>
+            <td> {{ employee.edesignation }} </td>
+            <td> {{ employee.ecnum }} </td>
+            <td><button type="button" class="dbutton" onclick="window.location='remove_employee/{{ employee.eid }}'"> Delete Patient </button></td>
+
+        </tr>
+        {% endfor %}
+    </table>
+    <br>
+
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for msg in messages %}
+                    <h3 style="color: red;"> {{ msg }} </h3>
+                {% endfor %}
+            {% endif %}
+        {% endwith%}
+        
+        </div>
+    {% endblock %}

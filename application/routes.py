@@ -5,8 +5,21 @@ import re
 from application.db import *
 from werkzeug.utils import secure_filename
 import os
+import sys
 import uuid
 import pdfkit
+
+
+
+
+if sys.platform == "linux":
+    config = pdfkit.configuration(wkhtmltopdf='./bin/wkhtmltopdf')
+elif sys.platform == "win32":
+    path_wkhtmltopdf = r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe'
+    config = pdfkit.configuration(wkhtmltopdf=path_wkhtmltopdf)
+
+
+
 
 # path_wkhtmltopdf = r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe'
 # config = pdfkit.configuration(wkhtmltopdf=path_wkhtmltopdf)
@@ -745,7 +758,7 @@ def generatebill(id):
                 "printbill.html",
                 patient=patient, dy=dy, y=y, bill=bill, med=med, dia=dia, mtot=mtot, tot=tot
             )
-            pdf = pdfkit.from_string(html, False)
+            pdf = pdfkit.from_string(html, False, configuration=config)
             response = make_response(pdf)
             response.headers["Content-Type"] = "application/pdf"
             response.headers["Content-Disposition"] = "inline; filename=output.pdf"

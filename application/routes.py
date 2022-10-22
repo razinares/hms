@@ -873,7 +873,7 @@ def gg():
     html = render_template(
         "certificate.html",
         name=name)
-    pdf = pdfkit.from_string(html, False, configuration=config)
+    pdf = pdfkit.from_string(html, False, configuration=pdfkit_config)
     response = make_response(pdf)
     response.headers["Content-Type"] = "application/pdf"
     response.headers["Content-Disposition"] = "inline; filename=output.pdf"

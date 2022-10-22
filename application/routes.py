@@ -224,9 +224,11 @@ def editpatientdetail(id):
 def deletepatientdetail(id):
     if session.get('username') or session.get('recepUsername'):
         delpat = Patients.query.filter_by(id = id).delete()
+        med = Medicines.query.filter_by(pid=id).delete()
+        dia = Diagnostics.query.filter_by(pid=id).delete()
         db.session.commit()
 
-        if delpat == None:
+        if (delpat or med or dia) == None:
             flash('Something Went Wrong')
             return redirect( url_for('update_patient') )
         else:

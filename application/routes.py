@@ -4,20 +4,20 @@ from datetime import datetime, date
 import re
 from application.db import *
 from werkzeug.utils import secure_filename
-import os
-import sys
+import os, sys, subprocess
 import uuid
 import pdfkit
 
 
 
 
-if sys.platform == "linux":
-    config = pdfkit.configuration(wkhtmltopdf='./bin/wkhtmltopdf')
-elif sys.platform == "win32":
-    path_wkhtmltopdf = r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe'
-    config = pdfkit.configuration(wkhtmltopdf=path_wkhtmltopdf)
-
+if sys.platform == "win32":
+        pdfkit_config = pdfkit.configuration(wkhtmltopdf=os.environ.get('WKHTMLTOPDF_BINARY', 'C:\\Program Files\\wkhtmltopdf\\bin\\wkhtmltopdf.exe'))
+else:
+        os.environ['PATH'] += os.pathsep + os.path.dirname(sys.executable)
+        WKHTMLTOPDF_CMD = subprocess.Popen(['which', os.environ.get('WKHTMLTOPDF_BINARY', 'wkhtmltopdf')],
+            stdout=subprocess.PIPE).communicate()[0].strip()
+        pdfkit_config = pdfkit.configuration(wkhtmltopdf=WKHTMLTOPDF_CMD)
 
 
 

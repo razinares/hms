@@ -3,5 +3,5 @@ requests
 gunicorn
 flask_sqlalchemy
 Flask-Migrate
-git+git://github.com/johnfraney/wkhtmltopdf-pack.git
-pdfkit==0.6.1
+wkhtmltopdf-pack==0.12.3.0
+pdfkit==0.6.0

@@ -758,7 +758,7 @@ def generatebill(id):
                 "printbill.html",
                 patient=patient, dy=dy, y=y, bill=bill, med=med, dia=dia, mtot=mtot, tot=tot
             )
-            pdf = pdfkit.from_string(html, False, configuration=config)
+            pdf = pdfkit.from_string(html, False, configuration=pdfkit_config)
             response = make_response(pdf)
             response.headers["Content-Type"] = "application/pdf"
             response.headers["Content-Disposition"] = "inline; filename=output.pdf"

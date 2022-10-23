@@ -20,38 +20,35 @@
            
         
             <form action="" method="POST">
-                <label for="ssn_id">SSN ID*</label>
-                <input type="number" class="text1" id="ssn_id" name="ssn_id" min="9" maxlength="9" required><br>
+                <label for="nid">NID / BIRTH CERTIFICATE NO*</label>
+                <input type="number" class="text1" id="nid" name="nid" min="9" maxlength="9" required><br>
                 <label for="pname">Name*</label>
                 <input type="text" class="text1" id="pname" name="pname" required><br>
+
+                <label for="pnum">Patient Contact Number*</label>
+                <input type="text" class="text1" id="pnum" name="pnum" required><br>
+
+                <label for="anum">Associate Contact Number*</label>
+                <input type="text" class="text1" id="anum" name="anum" required><br>
+
                 <label for="age">Age*</label>
                 <input type="number" class="text1" id="age" maxlength="2" min="0" name="age" required ><br>
+
                 <label for="address">Address*</label>
                 <input type="text" class="text1" id="address" name="address" required><br>
-                <label for="tbed">Bed Type*</label>
+
+                <label for="pproblem">Patient Problem*</label>
+                <input type="text" class="text1" id="pproblem" name="pproblem" required><br>  
+
+                <label for="Bed">Bed Type*</label>
                 <select id="tbed" class="text1" name="tbed">
                     <option value="GeneralWard">General Ward</option>
                     <option value="SemiSharing">Semi Sharing</option>
                     <option value="SingleRoom">Single Room</option>
-                </select><br>
-                <label for="state">State*</label>
-                <select id="state" class="text1" name="state">
-                    <option value="Kerala">Kerala</option>
-                    <option value="Maharashtra">Maharashtra</option>
-                    <option value="Karnataka">Karnataka</option>
-                    <option value="Tamil Nadu">Tamil Nadu</option>
-                </select><br>
-                <label for="City">City*</label>
-                <select id="city" class="text1" name="city">
-                    <option value="Dhaka">Dhaka</option>
-                    <option value="Savar">Savar</option>
-                    <option value=""></option>
-                    <option value="Chennai">Chennai</option>
-                </select><br>
-                <label for="status">Patient Status*</label>
-                <select id="status" class="text1" name="status">
-                    <option value="Active">Active</option>
-                    <option value="Discharged">Discharged</option>
+                </select>
+
+                <select style="display: none" id="status" class="text1" name="status">
+                <option value="Active"></option>
                 </select><br>
                 <pre>(*)Fields are compulsary</pre>
                 <button class="button" type="submit">Submit</button> &nbsp;

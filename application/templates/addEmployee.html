@@ -26,6 +26,9 @@
                     <option value="Receptionist">Receptionist</option>
                     <option value="Lab">Lab</option>
                 </select><br>
+                <label for="emppassword">Employee Password</label>
+                <input type="password" class="text1" id="emppassword" name="emppassword" value="hospital">
+                <label for="ephoto">Employee Photo</label>
                 <input type="file" id="ephoto" name="ephoto"><br><br>
                 <pre>(*)Fields are compulsary</pre>
                 <button class="button" type="submit">Add Employee</button>
@@ -55,7 +58,7 @@
                     <h3 style="color: red;"> {{ msg }} </h3>
                 {% endfor %}
             {% endif %}
-        {% endwith%}
+            {% endwith%}
         
         </div>
     {% endblock %}

@@ -45,13 +45,12 @@
     <table border="1">
         <tr>
             <th>ID</th>
-            <th>SSN ID</th>
+            <th>NID</th>
             <th>NAME</th>
             <th>AGE</th>
             <th>ROOM TYPE</th>
             <th>ADDRESS</th>
-            <th>CITY</th>
-            <th>STATE</th>
+            <th>PROBLEM</th>
             <th>STATUS</th>
             <th>ADMITTED ON</th>
             <th>LAST UPDATED</th>
@@ -62,13 +61,12 @@
         
         <tr>
             <td> {{ patient.id }} </td>
-            <td> {{ patient.ssn_id }} </td>
+            <td> {{ patient.nid }} </td>
             <td> {{ patient.pname }} </td>
             <td> {{ patient.age }} </td>
             <td> {{ patient.tbed }} </td>
             <td> {{ patient.address }}</td>
-            <td> {{ patient.city }} </td>
-            <td> {{ patient.state }} </td>
+            <td> {{ patient.issue }} </td>
             <td> {{ patient.status }} </td>
             <td> {{ patient.date }} </td>
             <td> {{ patient.ldate }} </td>

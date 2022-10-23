@@ -21,7 +21,7 @@
     {% for edit in editpat %}
     <form action="" method="POST">
         <label for="id">Patient ID:   </label> <b>{{ edit.id }}</b> <br><br>
-        <label for="ssn id">Patient SSN ID: </label> <b> {{ edit.ssn_id }} </b> <br><br>
+        <label for="nid">Patient NID: </label> <b> {{ edit.nid }} </b> <br><br>
         
         <label for="Name">Old Patient Name:   </label> <b>{{ edit.pname }}</b> <br><br>
 
@@ -45,24 +45,6 @@
                     <option value="GeneralWard">General Ward</option>
                     <option value="SemiSharing">Semi Sharing</option>
                     <option value="SingleRoom">Single Room</option>
-                </select><br><br>
-
-                <label for="Old Address">Old State:  </label> <b> {{ edit.state }}</b> <br><br>       
-        <label for="state">Current State*</label>
-                <select id="nstate" class="text1" name="nstate">
-                    <option value="Kerala">Kerala</option>
-                    <option value="Maharashtra">Maharashtra</option>
-                    <option value="Karnataka">Karnataka</option>
-                    <option value="Tamil Nadu">Tamil Nadu</option>
-                </select><br><br>
-
-        <label for="Old Address">Old City:  </label> <b> {{ edit.city }}</b> <br><br>
-        <label for="City">Current City*</label>
-                <select id="ncity" class="text1" name="ncity">
-                    <option value="Kochi">Kochi</option>
-                    <option value="Mumbai">Mumbai</option>
-                    <option value="Bengaluru">Bengaluru</option>
-                    <option value="Chennai">Chennai</option>
                 </select><br><br>
 
         <label for="Old Address">Current Patient Status:  </label> <b>{{ edit.status }}</b> <br><br>

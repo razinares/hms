@@ -27,24 +27,6 @@ body {
     position: absolute;
     left: 131px;
 }
-
-.body1 {
-    background-image: url("../images/090716_stjoes.jpg");
-    background-repeat: no-repeat;
-    background-position: 0px 100px 0px 100px;
-    background-size: 100% ;
-    scroll-behavior: auto;
-}
-
-/* .body2 {
-    background-image: url("../images/1st.jpg");
-    background-repeat: no-repeat;
-    background-position: 0px 100px 0px 100px;
-    background-size: 100%;
-    scroll-behavior: auto;
-} */
-
-
 .container1 {
     position: relative;
     text-align: center;

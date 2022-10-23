@@ -14,12 +14,11 @@
         
           
             
-                <label for="pass" style="font-weight: bold; color: rgb(65, 77, 240);"> Password </label> <br><input class="text" type="password" name="password" minlength="6" class="logindecor" placeholder="Password">
+                <label for="pass" style="font-weight: bold; color: rgb(65, 77, 240);"> Password </label> <br><input class="text" type="password" name="password" required minlength="6" class="logindecor" placeholder="Password">            
            <br> <input class="bt" type="submit" value="Login">
             
         </form>
-        <strong style="color: green;">Don't have Account?  Click <a href="{{ url_for('registration') }}">here</a> to Register.</strong><br><br>
-        <strong style="color: green;">If you are a "Receptionist" or "Lab" use your Employee ID in the Username field to login and leave the password blank</strong>
+        <strong style="color: green;">Don't have Account?  Click <a href="{{ url_for('registration') }}">here</a> to Register.</strong>
     </div>
     {% with messages = get_flashed_messages() %}
     {% if messages %}

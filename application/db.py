@@ -15,17 +15,31 @@ migrate = Migrate(app, db)
 class Userstore(db.Model):
     __tablename__ = 'userstore'
     id = db.Column(db.Integer, primary_key=True)
-    uname = db.Column(db.String(20))
-    password = db.Column(db.String(20))
+    uname = db.Column(db.String(20), unique=True)
+    password = db.Column(db.String(20), nullable=False)
     date_created = db.Column(db.DateTime, default=datetime.now)
+    activity = db.relationship('UserActivity', backref='user')
+
+
+
+class UserActivity(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    userID = db.Column(db.Integer, db.ForeignKey('userstore.id'))
+    action = db.Column(db.String(255), nullable=False)
+    time = db.Column(db.DateTime, default=datetime.now())
+
+
+
+
+
 
 class Employee(db.Model):
     __tablename__ = 'employee_data'
     eid = db.Column(db.Integer, primary_key=True)
     ename = db.Column(db.String(20), nullable=False)
-    empid = db.Column(db.Integer, default=random.randint(10000, 99999))
+    empid = db.Column(db.Integer, default=random.randint(10000, 99999), unique=True)
     edesignation = db.Column(db.String(20))
-    ecnum = db.Column(db.Integer)
+    ecnum = db.Column(db.String(20))
     efname = db.Column(db.String(20))
     emname = db.Column(db.String(20))
     eenum = db.Column(db.String(20))
@@ -36,20 +50,24 @@ class Employee(db.Model):
     eedu = db.Column(db.String)
     ejobinfo = db.Column(db.String)
     ephoto = db.Column(db.String(255), nullable=False, default="default.jpg")
+    emppassword = db.Column(db.String(255), nullable=False, default="hospital")
 
 class Patients(db.Model):
     __tablename__ = 'patients'
     id = db.Column(db.Integer, primary_key=True)
-    ssn_id = db.Column(db.Integer)
+    nid = db.Column(db.Integer, unique=True)
     pname = db.Column(db.String(20), nullable=False)
     age = db.Column(db.Integer)
     date = db.Column(db.DateTime, default=datetime.now)
     ldate = db.Column(db.DateTime, default=datetime.now)
     tbed = db.Column(db.String(10))
     address = db.Column(db.String(20))
-    city = db.Column(db.String(20))
-    state = db.Column(db.String(20))
+    # city = db.Column(db.String(20))
+    # state = db.Column(db.String(20))
     status = db.Column(db.String(20))
+    issue = db.Column(db.String(100))
+    pcontact = db.Column(db.String(20))
+    assoc_contact = db.Column(db.String(20))
 
     # children = relationship("Medicines")
     # children1 = relationship("Diagnostics")

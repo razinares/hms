@@ -1,0 +1,48 @@
+{% extends "layout.html" %}
+
+{% block title %} Employees {% endblock %}
+
+{% block content %}
+        <style>
+            /* input {
+                position: absolute;
+                left: 150px;
+            }
+            
+            select {
+                position: absolute;
+                left: 150px;
+            } */
+        </style>
+        <div class="form1">
+            <h1 style="text-align: center; color: rgb(23, 5, 187);">User Activity</h1>
+
+            <table >
+        <tr>
+            <th>Admin Name</th>
+            <th>Activity</th>
+            <th>Time</th>
+
+        </tr>
+        {% for activity in activities %}
+        <tr>
+            <td> {{ activity.user.uname }} </td>
+            <td> {{ activity.action }} </td>
+            <td> {{ activity.time }} </td>
+
+
+        </tr>
+        {% endfor %}
+    </table>
+    <br>
+
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for msg in messages %}
+                    <h3 style="color: red;"> {{ msg }} </h3>
+                {% endfor %}
+            {% endif %}
+        {% endwith%}
+        
+        </div>
+    {% endblock %}

@@ -1,0 +1,95 @@
+{% extends "layout.html" %}
+
+{% block title %} Account Status {% endblock %}
+
+{% block content %}
+        <style>
+            /* input {
+                position: absolute;
+                left: 150px;
+            }
+            
+            select {
+                position: absolute;
+                left: 150px;
+            } */
+        </style>
+        <div class="form1">
+            <h1 style="color:#032583">Employee Details</h1>
+        
+           {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for msg in messages %}
+                    <h3 style="color: red;  font-weight: bold; font-size: larger;"> {{ msg }} </h3>
+                {% endfor %}
+            {% endif %}
+            {% endwith%}
+        
+            <form action="" method="POST" enctype = "multipart/form-data">
+                <label for="eid">Employee ID*</label>
+                <input type="number" class="text1" id="eid" name="empid" min="9" maxlength="9" required>
+
+                <label for="ename">Employee Name*</label>
+                <input type="text" class="text1" id="ename" name="ename" required><br><br>
+
+                <label for="edesignation">Designation*</label>
+                <select id="edesignation" class="text1" name="edesignation" required>
+                    <option value="Receptionist">Receptionist</option>
+                    <option value="Lab">Lab</option>
+                </select><br>
+
+
+                <label for="ecnum"> Contact Number*</label>
+                <input type="text" class="text1" id="ecnum" name="ecnum" required><br> <br> <br>
+
+                <label for="efname">Father's Name*</label>
+                <input type="text" class="text1" id="efname" name="efname" required>
+
+                <label for="emname">Mother's Name*</label>
+                <input type="text" class="text1" id="emname" name="emname" required><br> <br>
+
+                <label for="eenum">Emergency Contact Number*</label>
+                <input type="text" class="text1" id="eenum" name="eenum" required>
+
+                <label for="enid">Employee NID*</label>
+                <input type="number" class="text1" id="enid" name="enid" required><br> <br>
+
+
+                <label for="paddr">Present Address*</label>
+                <input type="text" class="text1" id="paddr" name="paddr" required>
+                
+                <label for="edob">Date of Birth (dd/mm/yy)*</label>
+                <input type="text" class="text1" id="edob" name="edob" required > <br><br>
+
+                <label for="epaddress">Permanent Address*</label>
+                <input type="text" class="text1" id="epaddress" name="epaddress" required><br><br>
+
+    
+
+                <label for="eedu">Education Background*</label>
+                <input type="text" class="text1" id="eedu" name="eedu" required><br> <br>
+                
+                <label for="ejobinfo">Previous Job Information*</label>
+                <input type="text" class="text1" id="ejobinfo" name="ejobinfo" required><br>  <br>
+
+                <label for="password">Password*</label>
+                <input type="password" class="text1" id="password" name="password" required placeholder="Default password: hospital"><br>  <br>
+
+                <label for="ephoto">Employee Photo</label>
+                <input type="file" id="ephoto" name="ephoto"><br><br>
+
+                
+                    
+
+
+
+                <button class="button" type="submit">Submit</button>
+                <button class="rbutton" type="reset">Reset</button>
+            </form>
+
+
+
+
+        
+        </div>
+    {% endblock %}

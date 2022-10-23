@@ -19,13 +19,12 @@
     <table >
         <tr>
             <th>ID</th>
-            <th>SSN ID</th>
+            <th>NID</th>
             <th>NAME</th>
             <th>AGE</th>
             <th>BEDTYPE</th>
             <th>ADDRESS</th>
-            <th>CITY</th>
-            <th>STATE</th>
+            <th>PROBLEM</th>
             <th>STATUS</th>
             <th>ADMIT DATE</th>
             <th>LAST EDIT</th>
@@ -35,13 +34,12 @@
         {% for update in updatep %}
         <tr>
             <td> {{ update.id }} </td>
-            <td> {{ update.ssn_id }} </td>
+            <td> {{ update.nid }} </td>
             <td> {{ update.pname }} </td>
             <td> {{ update.age }} </td>
             <td> {{ update.tbed }} </td>
             <td> {{ update.address }}</td>
-            <td> {{ update.city }} </td>
-            <td> {{ update.state }} </td>
+            <td> {{ update.issue }} </td>
             <td> {{ update.status }} </td>
             <td> {{ update.date }} </td>
             <td> {{ update.ldate }} </td>

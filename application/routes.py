@@ -30,6 +30,14 @@ ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
 
 
 
+def storeActivity(id, action):
+    activity = UserActivity(userID=id, action=action)
+    db.session.add(activity)
+    db.session.commit()
+
+
+
+
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -49,15 +57,18 @@ def login():
                 return redirect(url_for('login'))
             else:
                 if emp.edesignation == "Receptionist":
-                    session['recepUsername'] = username
-                    return redirect(url_for('home'))
+                    if (username == emp.empid) and (password == emp.emppassword):
+                        session['recepUsername'] = username
+                        return redirect(url_for('home'))
                 elif emp.edesignation == "Lab":
-                    session['lab'] = username
-                    return redirect(url_for('home'))
+                    if (username == emp.empid) and (password == emp.emppassword):
+                        session['lab'] = username
+                        return redirect(url_for('home'))
                 else:
                     return redirect(url_for(login))
-        elif username == usr.uname or password == usr.password:
-            session['username'] = username  # saving session for login
+        elif username == usr.uname and password == usr.password:
+            storeActivity(usr.id, "Login")
+            session['username'] = usr.id  # saving session for login
 
             return redirect( url_for('home') )
 
@@ -121,26 +132,31 @@ def home():
 def create_patient():
     if session.get('username') or session.get('recepUsername'):
         if request.method == 'POST':
-            ssn_id = request.form['ssn_id']
+            nid = request.form['nid']
             pname = request.form['pname']
             age = request.form['age']
             tbed = request.form['tbed']
             address = request.form['address']
-            state = request.form['state']
-            city = request.form['city']
+            # state = request.form['state']
+            # city = request.form['city']
+            pnum = request.form['pnum']
+            anum = request.form['anum']
             status = request.form['status']
+            issue = request.form['pproblem']
 
-            pat = Patients.query.filter_by( ssn_id = ssn_id ).first()
+            pat = Patients.query.filter_by( nid = nid ).first()
 
             if pat == None:
-                patient = Patients(ssn_id=ssn_id, pname=pname, age=age, tbed=tbed, address=address, state=state, city=city,  status = status)
+                patient = Patients(nid=nid, pname=pname, age=age, tbed=tbed, address=address, status = status, pcontact=pnum, assoc_contact=anum, issue=issue)
                 db.session.add(patient)
                 db.session.commit()
+                storeActivity(session['username'], "Patient Created " + pname)
+
                 flash('Patient creation initiated successfully')
                 return redirect( url_for('create_patient') )
 
             else:
-                flash('Patient with this SSN ID already exists')
+                flash('Patient with this NID already exists')
                 return redirect( url_for('create_patient') )
     else:
         return "<h1>You do not have permission to perform this action. Please go back</h1>"
@@ -162,6 +178,7 @@ def update_patient():
         else:
             print("inside else")
             return render_template('update_patient.html', updatep = updatep)
+
 
     else:
         # flash('You have been logged out. Please login again')
@@ -202,11 +219,10 @@ def editpatientdetail(id):
             tbed = request.form['tbed']
             address = request.form['naddress']
             status = request.form['status']
-            state = request.form['nstate']
-            city = request.form['ncity']
             ldate = datetime.today()
-            row_update = Patients.query.filter_by( id = id ).update(dict(pname=pname, age=age, tbed=tbed, address=address, state=state, city=city, status = status, ldate=ldate))
+            row_update = Patients.query.filter_by( id = id ).update(dict(pname=pname, age=age, tbed=tbed, address=address, status = status, ldate=ldate))
             db.session.commit()
+            storeActivity(session['username'], "Updated Details for Patient ID: " + id)
             print("Roww update", row_update)
 
             if row_update == None:
@@ -226,6 +242,7 @@ def deletepatientdetail(id):
         delpat = Patients.query.filter_by(id = id).delete()
         med = Medicines.query.filter_by(pid=id).delete()
         dia = Diagnostics.query.filter_by(pid=id).delete()
+        storeActivity(session['username'], "Patient Deleted ID " + id)
         db.session.commit()
 
         if (delpat or med or dia) == None:
@@ -233,7 +250,7 @@ def deletepatientdetail(id):
             return redirect( url_for('update_patient') )
         else:
             flash('Patient deletion initiated successfully')
-            return redirect( url_for('update_patient') )
+            return redirect( url_for('deletepat') )
 
 
     return render_template('update_patient.html')
@@ -367,6 +384,7 @@ def addMedicine():
                 med = MedicineMaster(mid=mid, mname=mname, qavailable=qavailable, rate=rate)
                 db.session.add(med)
                 db.session.commit()
+                storeActivity(session['username'], "Added Medicine " + mname)
                 flash('Medicine successfully Inserted to Database')
                 return redirect( url_for('addMedicine') )
 
@@ -484,6 +502,7 @@ def editmedicinedetail(mid):
             rate = request.form['rate']
             row_update = MedicineMaster.query.filter_by( mid = mid ).update(dict(mname=mname, qavailable=qavailable, rate=rate))
             db.session.commit()
+            storeActivity(session['username'], "Medicine Details Modified: " + mname)
             print("Roww update", row_update)
 
             if row_update == None:
@@ -500,13 +519,14 @@ def deletemedicinedetail(mid):
     if session.get('username') or session.get('lab'):
         delpat = MedicineMaster.query.filter_by(mid = mid).delete()
         db.session.commit()
+        storeActivity(session['username'], "Medicine Removed ID:" + mid)
 
         if delpat == None:
             flash('Something Went Wrong')
             return redirect( url_for('medicinestatus') )
         else:
             flash('Medicine deletion initiated successfully')
-            return redirect( url_for('medicinestatus') )
+            return redirect( url_for('deletemed') )
 
     return render_template('medicinestatus.html')
 
@@ -539,8 +559,7 @@ def issuemedicine(pid):
                         rowup = Medicines( mid = mid, pid=pid, mname = mname, rate = rate , qissued=qissued)
                         db.session.add(rowup)
                         db.session.commit()
-                        print("ROWWW", rowup)
-
+                        storeActivity(session['username'], "Medicine Issued to Patient ID: " + pid)
                         return render_template('issuemedicine.html', patient = patient)
 
 
@@ -622,6 +641,7 @@ def addDiagnostics():
                 diag = DiagnosticsMaster(tid=tid, tname=tname, tcharge=tcharge)
                 db.session.add(diag)
                 db.session.commit()
+                storeActivity(session['username'], "Added Diagnostics " + tname)
                 flash('Test successfully Added to Database')
                 return redirect( url_for('addDiagnostics') )
 
@@ -671,7 +691,7 @@ def issuediagnostics(pid):
                     rowup = Diagnostics( tid = tid, pid=pid, tname = tname, tcharge = tcharge )
                     db.session.add(rowup)
                     db.session.commit()
-                    print("ROWWW", rowup)
+                    storeActivity(session['username'], "Issued Diagnostic to Patient ID: " + pid)
 
                     return render_template('issuediagnostics.html', patient = patient)
       
@@ -751,6 +771,7 @@ def generatebill(id):
         stat = 'Active'
         row_update = Patients.query.filter_by( id = id ).update(dict(status = stat))
         db.session.commit()
+        storeActivity(session['username'], "Bill Generated for Patient ID: " + id)
 
         if row_update == None:
             flash('Something Went Wrong')
@@ -771,7 +792,7 @@ def generatebill(id):
         # flash('You have been logged out. Please login again')
         # return redirect( url_for('login'))
         return "<h1>You do not have permission to perform this action. Please go back</h1>"
-    return render_template('billing.html')
+
 
 
 
@@ -784,22 +805,37 @@ def generatebill(id):
 def add_employee():
     if 'username' in session:
        if request.method == 'POST':
-           ename = request.form['name']
-           edesignation = request.form['designation']
+           ename = request.form['ename']
+           empid = request.form['empid']
+
+           edesignation = request.form['edesignation']
+           ecnum =request.form['ecnum']
+           efname = request.form['efname']
+           emname = request.form['emname']
+           eenum = request.form['eenum']
+           enid = request.form['enid']
+           paddr = request.form['paddr']
+           edob = request.form['edob']
+           epaddress = request.form['epaddress']
+           emppassword = request.form['password']
            ephoto = request.files['ephoto']
+           if enid == None:
+               enid = random.randint(10000, 99999)
            uid = str(uuid.uuid4())
            ephotoname = uid + str(ephoto.filename)
            ephoto.save(os.path.join('application/static/ephotos', ephotoname))
            if not ephoto:
                ephotoname = None
-
-           employee = Employee(ename=ename, edesignation=edesignation, ephoto=ephotoname)
+           employee = Employee(ename=ename, edesignation=edesignation, ephoto=ephotoname, emppassword=emppassword, empid=empid, ecnum=ecnum, efname=efname, emname=emname, eenum=eenum, paddr=paddr, edob=edob, epaddress=epaddress)
            db.session.add(employee)
            db.session.commit()
+           storeActivity(session['username'], "Added Employee " + ename)
+           flash('Employee successfully added')
+           return redirect(url_for('add_employee'))
 
 
        employees = Employee.query.all()
-       return render_template('addEmployee.html', employees=employees)
+       return render_template('CreateEmployee.html', employees=employees)
 
 
     else:
@@ -819,6 +855,7 @@ def remove_employee(id):
     if 'username' in session:
         emp = Employee.query.filter_by(eid = id).delete()
         db.session.commit()
+        storeActivity(session['username'], "Removed Employee ID: " + id)
 
         if emp == None:
             flash('Something Went Wrong')
@@ -830,56 +867,49 @@ def remove_employee(id):
     else:
         return "<h1>You do not have permission to perform this action. Please go back</h1>"
 
-    return render_template('listEmployees.html')
 
 
-@app.route('/re_login', methods=['GET', 'POST'])
-def re_login():
-    if 'recepUsername' in session:                # Checking for session login
-        return redirect( url_for('home') )
-
-    if request.method == 'POST':
-        username = request.form['username']
-
-        usr = Employee.query.filter_by(empid = username, edesignation = "Receptionist").first()
-        print(usr.empid)
-        if usr == None:
-            flash('User Not Found', category='error')
-            return redirect( url_for('login') )
-
-        elif username == str(usr.empid):
-            session['recepUsername'] = username  # saving session for login
-            return "You are" + username
-
-        else:
-            flash('Wrong Credentials. Check Username and Password Again', category="error")
-
-    return render_template("receptionistLogin.html")
+# @app.route('/re_login', methods=['GET', 'POST'])
+# def re_login():
+#     if 'recepUsername' in session:                # Checking for session login
+#         return redirect( url_for('home') )
+#
+#     if request.method == 'POST':
+#         username = request.form['username']
+#
+#         usr = Employee.query.filter_by(empid = username, edesignation = "Receptionist").first()
+#         print(usr.empid)
+#         if usr == None:
+#             flash('User Not Found', category='error')
+#             return redirect( url_for('login') )
+#
+#         elif username == str(usr.empid):
+#             session['recepUsername'] = username  # saving session for login
+#             return "You are" + username
+#
+#         else:
+#             flash('Wrong Credentials. Check Username and Password Again', category="error")
+#
+#     return render_template("receptionistLogin.html")
 
 
 
 @app.route('/logout')
 def logout():
-    # session.pop('username', None)
-    # session.pop('recepUsername', None)
-    # session.pop('lab', None)
     session.clear()
     flash('logged out successfully .')
     return redirect( url_for('login') )
 
 
-@app.route('/gg')
-def gg():
 
-    name = "Giovanni Smith"
-    html = render_template(
-        "certificate.html",
-        name=name)
-    pdf = pdfkit.from_string(html, False, configuration=pdfkit_config)
-    response = make_response(pdf)
-    response.headers["Content-Type"] = "application/pdf"
-    response.headers["Content-Disposition"] = "inline; filename=output.pdf"
-    return response
+@app.route('/user_activity')
+def user_activity():
+    if 'username' in session:
+        activities = UserActivity.query.order_by(UserActivity.id.desc()).limit(50).all()
+        return render_template('userActivity.html', activities = activities)
+
+    else:
+        return redirect(url_for('login'))
 
 
     

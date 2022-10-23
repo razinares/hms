@@ -875,7 +875,10 @@ def generatebill(id):
             pdf = pdfkit.from_string(html, False, configuration=pdfkit_config, css=css)
             response = make_response(pdf)
             response.headers["Content-Type"] = "application/pdf"
-            response.headers["Content-Disposition"] = "inline; filename=output.pdf"
+            #response.headers["Content-Disposition"] = "inline; filename=output.pdf"
+
+            response.headers['Content-Disposition'] = \
+                'inline; filename=%s.pdf' % 'yourfilename'
             return response
 
 

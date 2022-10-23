@@ -9,7 +9,7 @@
 <body>
 <div >
     {% if patient %}
-    <table class="table" border="1">
+    <table class="table table-dark" border="1">
         <tr>
             <th>ID</th>
             <th>NAME</th>
@@ -125,21 +125,20 @@
            {% if patient %}
 
            <h1 style="text-align: center; color: rgb(247, 247, 247); background-color: rgb(253, 0, 0);" >TOTAL BILL</h1>
-           <table >
+           <table class="table" >
                 <tr>
                     <th> ROOM TOTAL </th>
                     <th> MEDICINES TOTAL </th>
                     <th> DIAGNOSTICS TOTAL </th>
                     <th>DOCTOR TOTAL</th>
                     <th> GRAND TOTAL </th>
-                    <th> BILL </th>
                 </tr>
                 <tr>
                     <td> {{ bill }}/- </td>
                     <td> {{ mtot }}/- </td>
                     <td> {{tot}}/- </td>
                     <td> {{ i }} </td>
-                    <td> {{ bill + mtot + tot + i }}.00/- </td>
+                    <td> <strong>{{ bill + mtot + tot + i }}.00/- </strong> </td>
 
                 </tr>
            </table>

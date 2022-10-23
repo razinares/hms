@@ -1,0 +1,71 @@
+{% extends "layout.html" %}
+
+{% block title %} Edit Patient {% endblock %} 
+
+{% block content %} 
+
+<style>
+    /* input {
+        position: absolute;
+        left: 150px;
+    }
+    
+    select {
+        position: absolute;
+        left: 150px;
+    } */
+</style>
+<div class="form1">
+    <h1 style="color: rgb(11, 29, 129); text-align: center;">Edit Employee </h1>
+    
+    {% for edit in editpat %}
+    <form action="" method="POST">
+        <label for="id">Employee ID:   </label> <b>{{ edit.empid }}</b> <br><br>
+        <label for="nid">Employee NID: </label> <b> {{ edit.enid }} </b> <br><br>
+        
+        <label for="Name">Employee Name (Old):   </label> <b>{{ edit.ename }}</b> <br><br>
+
+        <label for="New customer Name*">Employee Name (New) *</label>
+        <input type="text" class="text1" id="npname" name="npname" required><br><br>
+
+        <label for="Old Address">Old Address:  </label> <b>{{ edit.epaddress }}</b> <br><br>
+
+        <label for="New Address*">New Address*</label>
+        <input type="text" class="text1" id="naddress" name="naddress" required><br><br>
+
+        <label for="ecnum">Old Contact:  </label> <b>{{ edit.ecnum }}</b> <br><br>
+
+        <label for="ncontact">New Contact*</label>
+        <input type="number" class="text1" id="ncontact" name="ncontact" min="0"  maxlength="2" required><br><br>
+
+        <label for="edesignation">Old Designation:  </label><b> {{ edit.edesignation }}</b> <br><br>
+
+        <label for="edesignation">New Designation*</label>
+                <select id="edesignation" class="text1" name="edesignation">
+                    <option value="Receptionist">Receptionist</option>
+                    <option value="Lab">Lab</option>
+                    <option value="Accounts">Accounts</option>
+                    <option value="Pharmacy">Pharmacy</option>
+                </select><br><br>
+
+        <label for="password">Password</label>
+        <input type="password" name="password" class="text1" id="password" value="edit.emppassword"><br><br>
+
+
+        <pre>(*)Fields are compulsary</pre>
+        <button type="submit" class="button" >Update</button>
+    </form>
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for msg in messages %}
+                <p style="font-weight: bolder;" > {{ msg }} </p>
+            {% endfor %}
+        {% endif %}
+    {% endwith%}
+
+    {% endfor %}
+
+</div>
+
+{% endblock %}

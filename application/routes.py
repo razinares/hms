@@ -910,14 +910,16 @@ def add_employee():
            epaddress = request.form['epaddress']
            emppassword = request.form['password']
            ephoto = request.files['ephoto']
-           if enid == None:
-               enid = random.randint(10000, 99999)
+           eedu = request.form['eedu']
+           ejobinfo = request.form['ejobinfo']
+           if empid == None:
+               empid = random.randint(10000, 99999)
            uid = str(uuid.uuid4())
            ephotoname = uid + str(ephoto.filename)
            ephoto.save(os.path.join('application/static/ephotos', ephotoname))
            if not ephoto:
                ephotoname = None
-           employee = Employee(ename=ename, edesignation=edesignation, ephoto=ephotoname, emppassword=emppassword, empid=empid, ecnum=ecnum, efname=efname, emname=emname, eenum=eenum, paddr=paddr, edob=edob, epaddress=epaddress)
+           employee = Employee(ename=ename, edesignation=edesignation, ephoto=ephotoname, emppassword=emppassword, empid=empid, ecnum=ecnum, efname=efname, emname=emname, eenum=eenum, paddr=paddr, edob=edob, epaddress=epaddress, enid=enid, eedu=eedu, ejobinfo=ejobinfo)
            db.session.add(employee)
            db.session.commit()
            try:
@@ -944,6 +946,17 @@ def list_employees():
     else:
         return "<h1>You do not have permission to perform this action. Please go back</h1>"
 
+
+
+
+@app.route('/remove_employee')
+def remove_employees():
+    if 'username' in session:
+        employees = Employee.query.all()
+        return render_template('removeEmployee.html', employees=employees)
+    else:
+        return redirect(url_for('home'))
+
 @app.route('/remove_employee/<id>')
 def remove_employee(id):
     if 'username' in session:
@@ -956,10 +969,55 @@ def remove_employee(id):
             return redirect( url_for('list_employees') )
         else:
             flash('Employee deletion initiated successfully')
-            return redirect( url_for('list_employees') )
+            return redirect( url_for('remove_employees') )
 
     else:
         return "<h1>You do not have permission to perform this action. Please go back</h1>"
+
+
+
+@app.route('/edit_employee/<id>', methods=['GET', 'POST'])
+def edit_employee(id):
+    print("id is : ", id)
+    if session.get('username'):
+        print(datetime.now())
+        emp = Employee.query.filter_by( eid = id )
+
+
+        if request.method == 'POST':
+            pname = request.form['npname']
+            address = request.form['naddress']
+            edesignation = request.form['edesignation']
+            ecnum = request.form['ncontact']
+            password = request.form['password']
+            ldate = datetime.today()
+            row_update = Employee.query.filter_by( eid = id ).update(dict(ename=pname, epaddress=address, edesignation=edesignation, ecnum=ecnum, emppassword=password))
+            db.session.commit()
+            try:
+                storeActivity(session['username'], "Updated Details for Patient ID: " + id)
+            except:
+                pass
+
+            if row_update == None:
+                flash('Something Went Wrong')
+                return redirect( url_for('update_patient') )
+            else:
+                flash('Employee update initiated successfully')
+                return redirect( url_for('update_patient') )
+
+        return render_template('editEmployee.html', editpat = emp)
+    else:
+        return "<h1>You do not have permission to perform this action. Please go back</h1>"
+
+
+@app.route('/view_employee/<id>')
+def view_employee(id):
+    if 'username' in session:
+        employee = Employee.query.filter_by(eid = id).first()
+        return render_template('viewEmployee.html', employee=employee)
+
+    else:
+        return redirect(url_for('home'))
 
 
 

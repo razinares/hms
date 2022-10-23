@@ -1,0 +1,43 @@
+{% extends "layout.html" %}
+
+{% block title %} Edit Patient {% endblock %} 
+
+{% block content %} 
+
+<style>
+    /* input {
+        position: absolute;
+        left: 150px;
+    }
+    
+    select {
+        position: absolute;
+        left: 150px;
+    } */
+</style>
+<div class="form1">
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for msg in messages %}
+                <p style="font-weight: bolder;" > {{ msg }} </p>
+            {% endfor %}
+        {% endif %}
+    {% endwith%}
+    <h1 style="color: rgb(11, 29, 129); text-align: center;">Employee Details </h1>
+    <img src="/static/ephotos/{{ employee.ephoto }}" height="300px" width="300px" />
+    <h2>Employee Name: {{ employee.ename }}</h2>
+    <h3>Employee ID: {{employee.empid}}</h3>
+    <h3>Employee Designation: {{employee.edesignation}}</h3>
+    <h3>Employee Contact: {{employee.ecnum}}</h3>
+    <h3>Employee DOB: {{employee.edob}}</h3>
+    <h3>Father's Name: {{employee.efname}}</h3>
+    <h3>Mother's Name: {{employee.emname}}</h3>
+    <h3>Employee NID: {{employee.enid}}</h3>
+    <h3>Address: {{employee.epaddress}}</h3>
+    <h3>Perm Address: {{employee.paddr}}</h3>
+    <h3>Education Background: {{employee.eedu}}</h3>
+    <h3>Prev Job Info: {{employee.ejobinfo}}</h3>
+
+</div>
+
+{% endblock %}

@@ -7,6 +7,9 @@
     <div class="links">
         <nav class="navbar">
 
+
+            {% if session.get('username') or session.get('recepUsername') %}
+
             <div class="home"><a href="{{ url_for('home') }}">Home</a></div>
             <div class="dropdown">
                 <button class="dropbtn">Patient Management
@@ -19,8 +22,10 @@
                 </div>
             </div>
 
+            {% endif %}
 
 
+            {% if session.get('username') or session.get('recepUsername') %}
             <div class="dropdown">
                 <button class="dropbtn">Status Details
                     <i class="fa fa-caret-down"></i>
@@ -31,7 +36,10 @@
                     <a href="{{ url_for('search_patient') }}">Search Patients</a>
                 </div>
             </div>
+            {% endif %}
 
+
+            {% if session.get('username') or session.get('pharmacy') %}
             <div class="dropdown">
                 <button class="dropbtn">Medicine Store
                     <i class="fa fa-caret-down"></i>
@@ -44,7 +52,10 @@
                     <a href="{{ url_for('deletemed') }}">Delete Medicine</a> 
                 </div>
             </div>
+            {% endif %}
 
+
+            {% if session.get('username') or session.get('lab') %}
             <div class="dropdown">
                 <button class="dropbtn">Diagnostics Service
                     <i class="fa fa-caret-down"></i>
@@ -56,7 +67,10 @@
                     <a href="{{ url_for('delete_diagnostics') }}">Remove Diagnostics</a>
                 </div>
             </div>
+            {% endif %}
 
+
+            {% if session.get('username') or session.get('accounts') or session.get('recepUsername') %}
             <div class="dropdown">
                 <button class="dropbtn">Billing
                     <i class="fa fa-caret-down"></i>
@@ -67,6 +81,9 @@
                 </div>
 
             </div>
+            {% endif %}
+
+            {% if session.get('username') %}
 
             <div class="dropdown">
                 <button class="dropbtn">Employee
@@ -75,9 +92,12 @@
                 <div class="dropdown-content">
                     <a href="{{ url_for('add_employee') }}">Add Employee</a>
                     <a href="{{ url_for('list_employees') }}">Employee Lists</a>
+                    <a href="{{ url_for('remove_employees') }}">Remove Employee</a>
                 </div>
             </div>
             <div class="user"><a href="{{ url_for('user_activity') }}">User Logs</a></div>
+
+            {% endif %}
 
             <div class="logout"><a href="{{ url_for('logout') }}">Logout</a></div>
 

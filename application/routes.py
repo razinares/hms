@@ -57,11 +57,11 @@ def login():
                 return redirect(url_for('login'))
             else:
                 if emp.edesignation == "Receptionist":
-                    if (username == emp.empid) and (password == emp.emppassword):
+                    if (username == str(emp.empid)) and (password == emp.emppassword):
                         session['recepUsername'] = username
                         return redirect(url_for('home'))
                 elif emp.edesignation == "Lab":
-                    if (username == emp.empid) and (password == emp.emppassword):
+                    if (username == str(emp.empid)) and (password == emp.emppassword):
                         session['lab'] = username
                         return redirect(url_for('home'))
                 else:

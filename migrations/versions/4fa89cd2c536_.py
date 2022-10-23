@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: ad9eff4ca5a4
+Revision ID: 4fa89cd2c536
 Revises: 
-Create Date: 2022-10-23 10:16:50.700540
+Create Date: 2022-10-23 22:20:10.666883
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'ad9eff4ca5a4'
+revision = '4fa89cd2c536'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -24,6 +24,14 @@ def upgrade():
     sa.Column('tname', sa.String(length=20), nullable=True),
     sa.Column('tid', sa.Integer(), nullable=True),
     sa.Column('tcharge', sa.Integer(), nullable=True),
+    sa.Column('date', sa.DateTime(), nullable=True),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('doctor_visit',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('pid', sa.Integer(), nullable=True),
+    sa.Column('dname', sa.String(length=20), nullable=True),
+    sa.Column('charge', sa.Integer(), nullable=True),
     sa.Column('date', sa.DateTime(), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
@@ -116,5 +124,6 @@ def downgrade():
     op.drop_table('patients')
     op.drop_table('medicines')
     op.drop_table('employee_data')
+    op.drop_table('doctor_visit')
     op.drop_table('diagnostics')
     # ### end Alembic commands ###

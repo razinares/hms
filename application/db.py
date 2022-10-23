@@ -107,3 +107,11 @@ class DiagnosticsMaster(db.Model):
     tid = db.Column(db.Integer, db.ForeignKey('diagnostics.tid'), primary_key=True)
     tname = db.Column(db.String(20))
     tcharge = db.Column(db.Integer)
+
+class DoctorVisit(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    pid = db.Column(db.Integer)
+    dname = db.Column(db.String(20))
+    charge = db.Column(db.Integer)
+    date = db.Column(db.DateTime, default=datetime.now())
+

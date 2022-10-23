@@ -38,6 +38,7 @@
                 </button>
                 <div class="dropdown-content">
                     <a href="{{ url_for('addMedicine') }}">Add Medicine</a>
+                    <a href="{{ url_for('PharmacistPatientDetails') }}">Issue Medicines</a>
                     <a href="{{ url_for('medicinestatus') }}"> Medicine Status</a>
                     <a href="{{ url_for('updatemed') }}">Update Medicine</a>
                     <a href="{{ url_for('deletemed') }}">Delete Medicine</a> 
@@ -49,12 +50,10 @@
                     <i class="fa fa-caret-down"></i>
                 </button>
                 <div class="dropdown-content">
-                    <a href="{{ url_for('PharmacistPatientDetails') }}">Issue Medicines</a>
                     <a href="{{ url_for('DiagnosticsPatientDetails') }}">Issue Diagnostics</a>
                     <a href="{{ url_for('diagnosticsstatus') }}">Diagnostics Status</a>
                     <a href="{{ url_for('addDiagnostics') }}">Add Diagnostics </a>
-                    <a href="{{ url_for('DiagnosticsPatientDetails') }}">Update Test</a> 
-                    <a href="{{ url_for('DiagnosticsPatientDetails') }}">Delete Test</a> 
+                    <a href="{{ url_for('delete_diagnostics') }}">Remove Diagnostics</a>
                 </div>
             </div>
 
@@ -64,7 +63,9 @@
                 </button>
                 <div class="dropdown-content">
                     <a href="{{ url_for('billing') }}">Patient Billing</a>
+                    <a href="{{ url_for('doctor_visit') }}">Doctor Visit</a>
                 </div>
+
             </div>
 
             <div class="dropdown">

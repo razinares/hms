@@ -64,6 +64,17 @@ def login():
                     if (username == str(emp.empid)) and (password == emp.emppassword):
                         session['lab'] = username
                         return redirect(url_for('home'))
+
+                elif emp.edesignation == "Accounts":
+                    if (username == str(emp.empid)) and (password == emp.emppassword):
+                        session['accounts'] = username
+                        return redirect(url_for('home'))
+
+                elif emp.edesignation == "Pharmacy":
+                    if (username == str(emp.empid)) and (password == emp.emppassword):
+                        session['pharmacy'] = username
+                        return redirect(url_for('home'))
+
                 else:
                     return redirect(url_for(login))
         elif username == usr.uname and password == usr.password:
@@ -115,7 +126,7 @@ def registration():
 
 @app.route('/home')
 def home():
-    if session.get('username') or session.get('recepUsername') or session.get('lab'):
+    if (session.get('username') or session.get('recepUsername')) or (session.get('lab') or session.get('accounts')) or session.get('pharmacy'):
         return render_template('home.html')
 
     # elif 'recepUsername' in session:
@@ -150,7 +161,10 @@ def create_patient():
                 patient = Patients(nid=nid, pname=pname, age=age, tbed=tbed, address=address, status = status, pcontact=pnum, assoc_contact=anum, issue=issue)
                 db.session.add(patient)
                 db.session.commit()
-                storeActivity(session['username'], "Patient Created " + pname)
+                try:
+                    storeActivity(session['username'], "Patient Created " + pname)
+                except:
+                    pass
 
                 flash('Patient creation initiated successfully')
                 return redirect( url_for('create_patient') )
@@ -222,7 +236,10 @@ def editpatientdetail(id):
             ldate = datetime.today()
             row_update = Patients.query.filter_by( id = id ).update(dict(pname=pname, age=age, tbed=tbed, address=address, status = status, ldate=ldate))
             db.session.commit()
-            storeActivity(session['username'], "Updated Details for Patient ID: " + id)
+            try:
+                storeActivity(session['username'], "Updated Details for Patient ID: " + id)
+            except:
+                pass
             print("Roww update", row_update)
 
             if row_update == None:
@@ -242,7 +259,11 @@ def deletepatientdetail(id):
         delpat = Patients.query.filter_by(id = id).delete()
         med = Medicines.query.filter_by(pid=id).delete()
         dia = Diagnostics.query.filter_by(pid=id).delete()
-        storeActivity(session['username'], "Patient Deleted ID " + id)
+        doc = DoctorVisit.query.filter_by(pid=id).delete()
+        try:
+            storeActivity(session['username'], "Patient Deleted ID " + id)
+        except:
+            pass
         db.session.commit()
 
         if (delpat or med or dia) == None:
@@ -299,7 +320,7 @@ def search_patient():
 def billing():
     #today = datetime.today().strftime('%Y-%m-%d')
     today = datetime.now()
-    if session.get('username') or session.get('recepUsername'):
+    if (session.get('username') or session.get('recepUsername')) or session.get('accounts'):
         if request.method == 'POST':
             id = request.form['id']
             delta = 0
@@ -351,8 +372,16 @@ def billing():
                         for i in dia:
                             tot += i.tcharge
 
+                    doc = DoctorVisit.query.filter_by(pid=id).all()
+                    if doc == None:
+                        flash("No doctors made visit")
+                    else:
+                        d = 0
+                        for j in doc:
+                            d += j.charge
 
-                        return render_template('billing.html', patient = patient, dy=dy, y=y, bill = bill, med = med, dia = dia, mtot = mtot, tot = tot)
+
+                        return render_template('billing.html', patient = patient, dy=dy, y=y, bill = bill, med = med, dia = dia, mtot = mtot, tot = tot, i = d, doc=doc)
 
 
             if id == "":
@@ -371,7 +400,7 @@ def billing():
 
 @app.route('/addMedicine', methods=['GET', 'POST'] )
 def addMedicine():
-    if session.get('username') or session.get('lab'):
+    if (session.get('username') or session.get('lab')) or session.get('pharmacy'):
         if request.method == 'POST':
             mid = request.form['mid']
             mname = request.form['mname']
@@ -384,7 +413,10 @@ def addMedicine():
                 med = MedicineMaster(mid=mid, mname=mname, qavailable=qavailable, rate=rate)
                 db.session.add(med)
                 db.session.commit()
-                storeActivity(session['username'], "Added Medicine " + mname)
+                try:
+                    storeActivity(session['username'], "Added Medicine " + mname)
+                except:
+                    pass
                 flash('Medicine successfully Inserted to Database')
                 return redirect( url_for('addMedicine') )
 
@@ -401,7 +433,7 @@ def addMedicine():
 
 @app.route('/PharmacistPatientDetails', methods=['GET', 'POST'])
 def PharmacistPatientDetails():
-    if session.get('username') or session.get('lab'):
+    if session.get('username') or session.get('pharmacy'):
         if request.method == 'POST':
             id = request.form['id']
 
@@ -433,7 +465,7 @@ def PharmacistPatientDetails():
 
 @app.route('/medicinestatus')
 def medicinestatus():
-    if session.get('username') or session.get('lab'):
+    if (session.get('username') or session.get('pharmacy')):
         updatep = MedicineMaster.query.all()
         print(updatep)
         if not updatep:
@@ -451,7 +483,7 @@ def medicinestatus():
 
 @app.route('/updatemed')
 def updatemed():
-    if session.get('username') or session.get('lab'):
+    if (session.get('username') or session.get('pharmacy')):
 
         updatep = MedicineMaster.query.all()
         print(updatep)
@@ -466,11 +498,10 @@ def updatemed():
         # flash('You have been logged out. Please login again')
         # return redirect( url_for('login') )
         return "<h1>You do not have permission to perform this action. Please go back</h1>"
-    return render_template('updatemed.html')
 
 @app.route('/deletemed')
 def deletemed():
-    if session.get('username') or session.get('lab'):
+    if (session.get('username') or session.get('pharmacy')):
         updatep = MedicineMaster.query.all()
         print(updatep)
         if not updatep:
@@ -489,7 +520,7 @@ def deletemed():
 @app.route('/editmedicinedetail/<mid>', methods=['GET', 'POST'] )
 def editmedicinedetail(mid):
     print("id is : ", mid)
-    if session.get('username') or session.get('lab'):
+    if (session.get('username') or session.get('pharmacy')):
         print("inside sesssss")
         print(datetime.now())
         editpat = MedicineMaster.query.filter_by( mid = mid )
@@ -502,7 +533,10 @@ def editmedicinedetail(mid):
             rate = request.form['rate']
             row_update = MedicineMaster.query.filter_by( mid = mid ).update(dict(mname=mname, qavailable=qavailable, rate=rate))
             db.session.commit()
-            storeActivity(session['username'], "Medicine Details Modified: " + mname)
+            try:
+                storeActivity(session['username'], "Medicine Details Modified: " + mname)
+            except:
+                pass
             print("Roww update", row_update)
 
             if row_update == None:
@@ -516,10 +550,13 @@ def editmedicinedetail(mid):
 
 @app.route('/deletemedicinedetail/<mid>')
 def deletemedicinedetail(mid):
-    if session.get('username') or session.get('lab'):
+    if (session.get('username') or session.get('pharmacy')):
         delpat = MedicineMaster.query.filter_by(mid = mid).delete()
         db.session.commit()
-        storeActivity(session['username'], "Medicine Removed ID:" + mid)
+        try:
+            storeActivity(session['username'], "Medicine Removed ID:" + mid)
+        except:
+            pass
 
         if delpat == None:
             flash('Something Went Wrong')
@@ -532,7 +569,7 @@ def deletemedicinedetail(mid):
 
 @app.route('/issuemedicine/<pid>', methods=['GET', 'POST'])
 def issuemedicine(pid):
-    if session.get('username') or session.get('lab'):
+    if session.get('username') or session.get('pharmacy'):
         if request.method == 'POST':
             mname = request.form['mname']
 
@@ -559,7 +596,10 @@ def issuemedicine(pid):
                         rowup = Medicines( mid = mid, pid=pid, mname = mname, rate = rate , qissued=qissued)
                         db.session.add(rowup)
                         db.session.commit()
-                        storeActivity(session['username'], "Medicine Issued to Patient ID: " + pid)
+                        try:
+                            storeActivity(session['username'], "Medicine Issued to Patient ID: " + pid)
+                        except:
+                            pass
                         return render_template('issuemedicine.html', patient = patient)
 
 
@@ -641,7 +681,10 @@ def addDiagnostics():
                 diag = DiagnosticsMaster(tid=tid, tname=tname, tcharge=tcharge)
                 db.session.add(diag)
                 db.session.commit()
-                storeActivity(session['username'], "Added Diagnostics " + tname)
+                try:
+                    storeActivity(session['username'], "Added Diagnostics " + tname)
+                except:
+                    pass
                 flash('Test successfully Added to Database')
                 return redirect( url_for('addDiagnostics') )
 
@@ -691,8 +734,10 @@ def issuediagnostics(pid):
                     rowup = Diagnostics( tid = tid, pid=pid, tname = tname, tcharge = tcharge )
                     db.session.add(rowup)
                     db.session.commit()
-                    storeActivity(session['username'], "Issued Diagnostic to Patient ID: " + pid)
-
+                    try:
+                        storeActivity(session['username'], "Issued Diagnostic to Patient ID: " + pid)
+                    except:
+                        pass
                     return render_template('issuediagnostics.html', patient = patient)
       
             if tname == "":
@@ -704,6 +749,40 @@ def issuediagnostics(pid):
     
     return render_template('issuediagnostics.html')
 
+@app.route('/delete_diagnostics')
+def delete_diagnostics():
+    if (session.get('username') or session.get('lab')):
+        updatep = DiagnosticsMaster.query.all()
+        print(updatep)
+        if not updatep:
+            flash('No Diagnostics exists in database')
+            return redirect( url_for('addDiagnostics') )
+        else:
+            print("inside else")
+            return render_template('deleteDiagnostics.html', updatep = updatep)
+
+    else:
+        # flash('You have been logged out. Please login again')
+        # return redirect( url_for('login') )
+        return "<h1>You do not have permission to perform this action. Please go back</h1>"
+
+
+@app.route('/deletediadetail/<mid>')
+def deletediadetail(mid):
+    if (session.get('username') or session.get('lab')):
+        delpat = DiagnosticsMaster.query.filter_by(tid = mid).delete()
+        db.session.commit()
+        try:
+            storeActivity(session['username'], "Medicine Removed ID:" + mid)
+        except:
+            pass
+
+        if delpat == None:
+            flash('Something Went Wrong')
+            return redirect( url_for('medicinestatus') )
+        else:
+            flash('Diagnostics deletion initiated successfully')
+            return redirect( url_for('delete_diagnostics') )
 
 
 
@@ -715,6 +794,7 @@ def generatebill(id):
     med = Medicines.query.filter_by(pid=id).all()
     patient = Patients.query.filter_by(id=id).first()
     dia = Diagnostics.query.filter_by(pid=id).all()
+    doc = DoctorVisit.query.filter_by(pid=id).all()
     y = 0
     bill = 0
     mtot = 0
@@ -764,6 +844,14 @@ def generatebill(id):
                 for i in dia:
                     tot += i.tcharge
 
+
+            if doc == None:
+                flash('No doctors made visit')
+            else:
+                d = 0
+                for j in doc:
+                    d += j.charge
+
     if id == "":
         return redirect(url_for('billing'))
 
@@ -771,17 +859,20 @@ def generatebill(id):
         stat = 'Active'
         row_update = Patients.query.filter_by( id = id ).update(dict(status = stat))
         db.session.commit()
-        storeActivity(session['username'], "Bill Generated for Patient ID: " + id)
-
+        try:
+            storeActivity(session['username'], "Bill Generated for Patient ID: " + id)
+        except:
+            pass
         if row_update == None:
             flash('Something Went Wrong')
             return redirect( url_for('billing') )
         else:
             html = render_template(
                 "printbill.html",
-                patient=patient, dy=dy, y=y, bill=bill, med=med, dia=dia, mtot=mtot, tot=tot
+                patient=patient, dy=dy, y=y, bill=bill, med=med, dia=dia, mtot=mtot, tot=tot, i=d, doc=doc
             )
-            pdf = pdfkit.from_string(html, False, configuration=pdfkit_config)
+            css = ['application/static/css/main.css']
+            pdf = pdfkit.from_string(html, False, configuration=pdfkit_config, css=css)
             response = make_response(pdf)
             response.headers["Content-Type"] = "application/pdf"
             response.headers["Content-Disposition"] = "inline; filename=output.pdf"
@@ -829,7 +920,10 @@ def add_employee():
            employee = Employee(ename=ename, edesignation=edesignation, ephoto=ephotoname, emppassword=emppassword, empid=empid, ecnum=ecnum, efname=efname, emname=emname, eenum=eenum, paddr=paddr, edob=edob, epaddress=epaddress)
            db.session.add(employee)
            db.session.commit()
-           storeActivity(session['username'], "Added Employee " + ename)
+           try:
+               storeActivity(session['username'], "Added Employee " + ename)
+           except:
+               pass
            flash('Employee successfully added')
            return redirect(url_for('add_employee'))
 
@@ -861,36 +955,11 @@ def remove_employee(id):
             flash('Something Went Wrong')
             return redirect( url_for('list_employees') )
         else:
-            flash('Patient deletion initiated successfully')
+            flash('Employee deletion initiated successfully')
             return redirect( url_for('list_employees') )
 
     else:
         return "<h1>You do not have permission to perform this action. Please go back</h1>"
-
-
-
-# @app.route('/re_login', methods=['GET', 'POST'])
-# def re_login():
-#     if 'recepUsername' in session:                # Checking for session login
-#         return redirect( url_for('home') )
-#
-#     if request.method == 'POST':
-#         username = request.form['username']
-#
-#         usr = Employee.query.filter_by(empid = username, edesignation = "Receptionist").first()
-#         print(usr.empid)
-#         if usr == None:
-#             flash('User Not Found', category='error')
-#             return redirect( url_for('login') )
-#
-#         elif username == str(usr.empid):
-#             session['recepUsername'] = username  # saving session for login
-#             return "You are" + username
-#
-#         else:
-#             flash('Wrong Credentials. Check Username and Password Again', category="error")
-#
-#     return render_template("receptionistLogin.html")
 
 
 
@@ -911,6 +980,29 @@ def user_activity():
     else:
         return redirect(url_for('login'))
 
+@app.route('/doctor_visit', methods=['GET', 'POST'])
+def doctor_visit():
+    if (session.get('username') or session.get('accounts')):
+        if request.method == 'POST':
+            dname = request.form['dname']
+            pid = request.form['pid']
+            fee = request.form['fee']
+            dc = Patients.query.filter_by(id=pid).first()
+            if dc == None:
+                flash("No patients found with this patient ID")
+                return redirect(url_for('doctor_visit'))
+            doc = DoctorVisit(dname=dname, pid=pid, charge=fee)
+            try:
+                db.session.add(doc)
+                db.session.commit()
+                flash("Successfully added")
+                return redirect(url_for('doctor_visit'))
+
+            except:
+                flash("Something went wrong")
+                return redirect(url_for('doctor_visit'))
+
+    return render_template('docVisit.html')
 
     
 

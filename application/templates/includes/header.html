@@ -8,7 +8,7 @@
         <nav class="navbar">
 
 
-            {% if session.get('username') or session.get('recepUsername') %}
+            {% if session.get('username') %}
 
             <div class="home"><a href="{{ url_for('home') }}">Home</a></div>
             <div class="dropdown">
@@ -25,7 +25,19 @@
             {% endif %}
 
 
-            {% if session.get('username') or session.get('recepUsername') %}
+            {% if session.get('recepUsername') %}
+            <div class="home"><a href="{{ url_for('home') }}">Home</a></div>
+            <div class="home"><a href="{{ url_for('create_patient') }}">Register Patient</a></div>
+            <div class="home"><a href="{{ url_for('update_patient') }}">Update Patient</a></div>
+            <div class="home"><a href="{{ url_for('deletepat') }}">Remove Patient</a></div>
+            <div class="home"><a href="{{ url_for('update_patient') }}">All Patients</a></div>
+            <div class="home"><a href="{{ url_for('patientscreen') }}"> Active Patients</a></div>
+            <div class="home"><a href="{{ url_for('search_patient') }}">Search Patients</a></div>
+            {% endif %}
+
+
+
+            {% if session.get('username') %}
             <div class="dropdown">
                 <button class="dropbtn">Status Details
                     <i class="fa fa-caret-down"></i>
@@ -54,8 +66,16 @@
             </div>
             {% endif %}
 
+            {% if session.get('pharmacy') %}
+            <div class="home"><a href="{{ url_for('addMedicine') }}">Add Medicine</a></div>
+            <div class="home"><a href="{{ url_for('PharmacistPatientDetails') }}">Issue Medicines</a></div>
+            <div class="home"><a href="{{ url_for('medicinestatus') }}"> Medicine Status</a></div>
+            <div class="home"><a href="{{ url_for('updatemed') }}">Update Medicine</a></div>
+            <div class="home"><a href="{{ url_for('deletemed') }}">Delete Medicine</a></div>
+            {% endif %}
 
-            {% if session.get('username') or session.get('lab') %}
+
+            {% if session.get('username') %}
             <div class="dropdown">
                 <button class="dropbtn">Diagnostics Service
                     <i class="fa fa-caret-down"></i>
@@ -68,9 +88,17 @@
                 </div>
             </div>
             {% endif %}
+            {% if session.get('lab') %}
+
+            <div class="home"><a href="{{ url_for('DiagnosticsPatientDetails') }}">Issue Diagnostics</a></div>
+            <div class="home"><a href="{{ url_for('diagnosticsstatus') }}">Diagnostics Status</a></div>
+            <div class="home"><a href="{{ url_for('addDiagnostics') }}">Add Diagnostics </a></div>
+            <div class="home"><a href="{{ url_for('delete_diagnostics') }}">Remove Diagnostics</a></div>
+
+            {% endif %}
 
 
-            {% if session.get('username') or session.get('accounts') or session.get('recepUsername') %}
+            {% if session.get('username') or session.get('accounts') %}
             <div class="dropdown">
                 <button class="dropbtn">Billing
                     <i class="fa fa-caret-down"></i>

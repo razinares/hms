@@ -6,7 +6,6 @@ import random
 migrate = Migrate(app, db)
 
 
-
 class Userstore(db.Model):
     __tablename__ = 'userstore'
     id = db.Column(db.Integer, primary_key=True)
@@ -22,10 +21,6 @@ class UserActivity(db.Model):
     userID = db.Column(db.Integer, db.ForeignKey('userstore.id'))
     action = db.Column(db.String(255), nullable=False)
     time = db.Column(db.DateTime, default=datetime.now())
-
-
-
-
 
 
 class Employee(db.Model):
@@ -65,8 +60,6 @@ class Patients(db.Model):
     assoc_contact = db.Column(db.String(20))
     room = db.Column(db.String(9))
 
-    # children = relationship("Medicines")
-    # children1 = relationship("Diagnostics")
 
 class Medicines(db.Model):
     __tablename__ = 'medicines'
@@ -110,7 +103,6 @@ class DoctorVisit(db.Model):
     dname = db.Column(db.String(20))
     charge = db.Column(db.Integer)
     date = db.Column(db.DateTime, default=datetime.now())
-
 
 
 class pbill(db.Model):

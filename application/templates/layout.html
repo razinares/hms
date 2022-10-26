@@ -103,9 +103,15 @@ tr:nth-child(even) {
 </head>
 
 <body>
-    {% include "includes/header.html" %} 
-    
-    {% block content %} {% endblock %}
+    {% include "includes/header.html" %}
+
+    {% block content %}
+    {% block footer %}
+      &copy; Copyright PUHMS</a>.
+    {% endblock %}
+    {% endblock %}
+
+
 </body>
 
 </html>

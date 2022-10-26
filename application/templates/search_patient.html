@@ -3,6 +3,10 @@
 {% block title %} Search Patient {% endblock %}
 
 {% block css %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.js"></script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.js"></script>
+<link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/themes/ui-lightness/jquery-ui.css" rel="stylesheet" type="text/css" />
 <style>
    .text{
         width: 250px;
@@ -21,9 +25,9 @@
 
     <div style="margin-left: -10px;">
     <form action="" method="POST">
-        <label for="id" style="font-weight: bold; font-size: large; color: rgb(2, 2, 146);">Patient ID</label>
+        <label for="tags" style="font-weight: bold; font-size: large; color: rgb(2, 2, 146);">Patient ID</label>
         &nbsp;&nbsp;
-        <input type="text" class="text"  name="id" id="id"><br><br>
+        <input type="text" class="text"  name="id" id="project"><br><br>
         <button class="button" type="submit">Search</button>
     </form>
     </div>
@@ -83,5 +87,39 @@
                 <h3></h3>
 
     {% endif %}
+
+<script>
+$( function() {
+    var projects = [
+
+        {% for pat in allp %}
+        {
+            value: "{{pat.id}}",
+            label: "{{pat.pname}} ID:{{pat.id}}"
+        },
+
+        {% endfor %}
+    ];
+
+    $( "#project" ).autocomplete({
+        minLength: 0,
+        source: projects,
+        focus: function( event, ui ) {
+            $( "#project" ).val( ui.item.label );
+            return false;
+        },
+        select: function( event, ui ) {
+            $( "#project" ).val( ui.item.value );
+
+            return false;
+        }
+    })
+    .autocomplete( "instance" )._renderItem = function( ul, item ) {
+      return $( "<li>" )
+        .append( "<div>" + item.label + "</div>" )
+        .appendTo( ul );
+    };
+  });
+ </script>
 
 {% endblock %}

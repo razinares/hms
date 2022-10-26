@@ -14,11 +14,29 @@
                 left: 150px;
             } */
         </style>
-        <div class="form1">
+        <div style="width:100%">
+        <div style="float: right; margin:400px 5%;">
+            {% if gen or semi or single %}
+            <table class="table">
+                <tr>
+                    <th>General Beds</th>
+                    <th>Semi-Share Beds</th>
+                    <th>Single Beds</th>
+                </tr>
+
+                <tr>
+                    <td>{{gen}}</td>
+                    <td>{{semi}}</td>
+                    <td>{{single}}</td>
+                </tr>
+            </table>
+        {% endif %}
+        </div>
+        <div class="form" style="margin: 100px auto; width: 25%;">
             <h1 style="color:#032583">Register Patient</h1>
         
            
-        
+
             <form action="" method="POST">
                 <label for="nid">NID / BIRTH CERTIFICATE NO*</label>
                 <input type="number" class="text1" id="nid" name="nid" min="9" maxlength="9" required><br>
@@ -40,11 +58,11 @@
                 <label for="pproblem">Patient Problem*</label>
                 <input type="text" class="text1" id="pproblem" name="pproblem" required><br>  
 
-                <label for="Bed">Bed Type*</label>
+                <label for="tbed">Bed Type*</label>
                 <select id="tbed" class="text1" name="tbed">
-                    <option value="GeneralWard">General Ward</option>
-                    <option value="SemiSharing">Semi Sharing</option>
-                    <option value="SingleRoom">Single Room</option>
+                    <option value="gen">General Ward</option>
+                    <option value="semi">Semi Sharing</option>
+                    <option value="single">Single Room</option>
                 </select>
 
                 <select style="display: none" id="status" class="text1" name="status">
@@ -64,4 +82,7 @@
         {% endwith%}
         
         </div>
+
+        </div>
+
     {% endblock %}

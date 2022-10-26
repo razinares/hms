@@ -1,28 +1,101 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+{% extends "layout.html" %}
 
-    <style>
-        body {
-            text-align:center;
-        }
-    </style>
-</head>
-<body>
-<div >
-    <h1>PUHMS</h1>
-    <h2>Generated Bill</h2>
+{% block title %} Bill Patient {% endblock %}
+
+{% block content %}
+<!-- CSS only -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0/jquery.min.js"></script>
+
+<!-- jQuery Modal -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.css" />
+<style>
+    /* input {
+        position: absolute;
+
+
+
+
+    } */
+    .text{
+        width: 250px;
+        padding: 10px 5px;
+        border: none;
+        border: solid 2px rgb(31, 21, 21) !important;
+        border-radius: 5px;
+
+
+
+
+
+}
+
+</style>
+
+
+<div style="margin-top: 150px; text-align: center;">
+    <h1 style="color: rgb(7, 7, 141);"> Search Patient for Billing</h1>
+
+ <div style="margin-left: -10px;">
+    <form action="" method="POST">
+        <label for="id" style="font-weight: bold; font-size: large; color: red;">Patient ID</label>
+&nbsp;&nbsp;        <input class="text" type="text" name="id" id="id"><br><br>
+        <button class="button" type="submit"  >Search </button>
+    </form>
+</div>
+</div>
+
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+    {% for msg in messages %}<br>
+        <p style="color: rgb(255, 5, 5);text-align: center; font-weight: bolder;"> <strong>{{ msg }}</strong> </p>
+        {% endfor %}
+{% endif %}
+{% endwith%}
+<div class="form1">
+<div>
     {% if patient %}
-    <table class="table table-dark" border="1">
+
+    <div id="ex1" class="modal">
+        <h1>Discount</h1>
+        <form class="form1" method="POST" action="/discount/{{patient.id}}">
+            <label>Discount</label>
+            <input class="text" type="number" name="discount" placeholder="Amount">
+            <br>
+            <button class="dbutton" type="submit">Add Discount</button>
+        </form>
+    </div>
+
+    <div id="ex2" class="modal">
+        <h1>Pay Bill</h1>
+        <form class="form1" method="POST" action="/paybill/{{patient.id}}">
+            <label>Paybill</label>
+            <input class="text" type="number" name="amount" placeholder="Amount">
+            <br>
+            <button class="dbutton" type="submit">Pay</button>
+        </form>
+    </div>
+
+<!-- Link to open the modal -->
+
+        <a href="#ex1" rel="modal:open" class="ubutton">Discount</a>
+        <br><br>
+        <a href="#ex2" rel="modal:open" class="ubutton">Pay Bill</a>
+        <br><br>
+
+
+<!-- The Modal -->
+
+
+    <table border="1">
         <tr>
             <th>ID</th>
+            <th>NID</th>
             <th>NAME</th>
             <th>AGE</th>
             <th>ROOM TYPE</th>
             <th>ADDRESS</th>
+            <th>STATUS</th>
             <th>ADMIT DATE</th>
             <th>No. OF DAYS</th>
             <th>ROOM BILL </th>
@@ -31,15 +104,20 @@
 
         <tr>
             <td> {{ patient.id }} </td>
+            <td> {{ patient.nid }} </td>
             <td> {{ patient.pname }} </td>
             <td> {{ patient.age }} </td>
             <td> {{ patient.tbed }} </td>
             <td> {{ patient.address }}</td>
+            <td> {{ patient.status }} </td>
             <td> {{ y }} </td>
             <td> {{dy}} </td>
             <td> {{ bill }} </td>
         </tr>
 
+        <tr>
+
+        </tr>
 
     </table>
 
@@ -83,15 +161,13 @@
         <br><br>
         {% if dia %}
         <p style="color: rgb(248, 11, 11);text-align: left;"> <strong>Diagnostics Issued</strong> </p>
-        <table class="table table-dark." border="1">
-            <thead>
+        <table class="table" border="1">
             <tr>
                 <th> ID </th>
                 <th> NAME </th>
                 <th>ISSUED DATE</th>
                 <th> RATE </th>
             </tr>
-            <thead>
             {% for dia in dia %}
             <tr>
                 <td> {{ dia.tid }} </td>
@@ -105,14 +181,13 @@
         </table>
         {% endif %}
 
-
        {% if doc %}
         <p style="color: rgb(248, 11, 11);text-align: left;"> <strong>Doctors Visit</strong> </p>
         <table class="table" border="1">
             <tr>
-                <th> DOCTOR NAME </th>
-                <th>VISIT DATE</th>
-                <th> FEE </th>
+                <th> Doctor Name </th>
+                <th>Visit Date</th>
+                <th>Visit Fee</th>
             </tr>
             {% for doc in doc %}
             <tr>
@@ -121,7 +196,7 @@
                 <td> {{ doc.charge }}.00 </td>
             </tr>
             {% else %}
-                <h4>No Doctors have made visit</h4>
+                <h4> No Doctors Visit </h4>
             {% endfor %}
         </table>
         {% endif %}
@@ -132,30 +207,32 @@
            {% if patient %}
 
            <h1 style="text-align: center; color: rgb(247, 247, 247); background-color: rgb(253, 0, 0);" >TOTAL BILL</h1>
-           <table class="table" >
+           <table >
                 <tr>
                     <th> ROOM TOTAL </th>
                     <th> MEDICINES TOTAL </th>
                     <th> DIAGNOSTICS TOTAL </th>
-                    <th> DOCTOR TOTAL </th>
+                    <th> VISIT FEE</th>
                     <th> DISCOUNT </th>
                     <th> PAID </th>
                     <th> GRAND TOTAL </th>
+                    <th> BILL </th>
                 </tr>
                 <tr>
                     <td> {{ b.room }}/- </td>
                     <td> {{ b.med }}/- </td>
-                    <td> {{ b.diag }}/- </td>
-                    <td> {{ b.doc }} </td>
-                    <td> -{{b.discount}} </td>
+                    <td> {{b.diag}}/- </td>
+                    <td>{{ b.doc }}</td>
+                    <td>-{{b.discount}}</td>
                     <td> -{{b.paid}} </td>
-                    <td> <strong>{{ (b.room + b.med + b.diag + b.doc ) - (b.paid + b.discount) }}.00/- </strong> </td>
+                    <td> {{ (b.room + b.med + b.diag + b.doc) - (b.discount+b.paid)}}.00/- </td>
+                    <td> <button type="button" class="dbutton" onclick="window.location='generatebill/{{ patient.id }}'"> Generate Bill </button> </td>
 
                 </tr>
            </table>
            {% endif %}
        </div>
+</div>
 
 
-</body>
-</html>
+{% endblock %}

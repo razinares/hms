@@ -7,7 +7,49 @@ from werkzeug.utils import secure_filename
 import os, sys, subprocess
 import uuid
 import pdfkit
+# Dict for available rooms
+room = {1: {"bed": 20 , "qty": 2, "cost": 2000}, 2: {"bed": 2, "qty": 20, "cost": 4000}, 3: {'bed': 1, 'qty': 10, "cost": 8000}}
 
+# Additional Functions for room
+def rooms():
+    pat = Patients.query.all()
+    a = 0
+    b = 0
+    c = 0
+    for p in pat:
+        if p.tbed == "gen":
+            a += 1
+        elif p.tbed =="semi":
+            b += 1
+        elif p.tbed == "single":
+            c += 1
+
+    return {1: a, 2: b, 3: c}
+def availRooms(index):
+    if index == "gen":
+        used = (room[1]['bed']*room[1]['qty']) - rooms()[1]
+    elif index == "semi":
+        used = (room[2]['bed']*room[2]['qty']) - rooms()[2]
+    elif index == "single":
+        used = (room[3]['bed']*room[3]['qty']) - rooms()[3]
+    else:
+        return "Room not provided"
+
+    return used
+def roomBill(index, days):
+    if days == None:
+        days = 1
+    if index == "gen":
+        bill = room[1]['cost'] * days
+    elif index == "semi":
+        bill = room[2]['cost'] * days
+    elif index == "single":
+        bill = room[3]['cost'] * days
+
+    else:
+        bill = 0
+
+    return bill
 
 
 
@@ -142,6 +184,9 @@ def home():
 @app.route('/create_patient', methods=['GET', 'POST'])
 def create_patient():
     if session.get('username') or session.get('recepUsername'):
+        gen = availRooms('gen')
+        semi = availRooms('semi')
+        single = availRooms('single')
         if request.method == 'POST':
             nid = request.form['nid']
             pname = request.form['pname']
@@ -158,9 +203,22 @@ def create_patient():
             pat = Patients.query.filter_by( nid = nid ).first()
 
             if pat == None:
-                patient = Patients(nid=nid, pname=pname, age=age, tbed=tbed, address=address, status = status, pcontact=pnum, assoc_contact=anum, issue=issue)
+                if availRooms(tbed) <= 0:
+                    flash("No rooms left")
+                    return redirect(url_for('create_patient'))
+                patient = Patients(nid=nid, pname=pname, age=age, tbed=tbed, address=address, status = status, pcontact=pnum, assoc_contact=anum, issue=issue, room=tbed)
+                bill = roomBill(tbed, 1)
                 db.session.add(patient)
-                db.session.commit()
+                try:
+                    db.session.commit()
+                    p = Patients.query.filter_by(nid=nid).first()
+                    b = pbill(room=bill, pat=p.id)
+                    db.session.add(b)
+                    db.session.commit()
+                except:
+                    flash("Something went wrong")
+                    return redirect(url_for('create_patient'))
+
                 try:
                     storeActivity(session['username'], "Patient Created " + pname)
                 except:
@@ -177,7 +235,7 @@ def create_patient():
         # flash('You are logged out. Please login again to continue')
         # return redirect( url_for('login') )
 
-    return render_template('create_patient.html')
+    return render_template('create_patient.html', gen=gen,semi=semi,single=single)
 
 
 @app.route('/update_patient')
@@ -260,6 +318,7 @@ def deletepatientdetail(id):
         med = Medicines.query.filter_by(pid=id).delete()
         dia = Diagnostics.query.filter_by(pid=id).delete()
         doc = DoctorVisit.query.filter_by(pid=id).delete()
+        bill = pbill.query.filter_by(pat=id).delete()
         try:
             storeActivity(session['username'], "Patient Deleted ID " + id)
         except:
@@ -295,17 +354,19 @@ def patientscreen():
 @app.route('/search_patient', methods=['GET', 'POST'])
 def search_patient():
     if session.get('username') or session.get('recepUsername'):
+        allp = Patients.query.all()
         if request.method == 'POST':
             id = request.form['id']
 
             if id != "":
+
                 patient = Patients.query.filter_by( id = id).first()
                 if patient == None:
                     flash('No Patients with  this ID exists')
                     return redirect( url_for('search_patient') )
                 else:
                     flash('Patient Found')
-                    return render_template('search_patient.html', patient = patient)
+                    return render_template('search_patient.html', patient = patient, allp=allp)
 
             if id == "":
                 flash('Enter  id to search')
@@ -314,11 +375,11 @@ def search_patient():
     else:
         return "<h1>You do not have permission to perform this action. Please go back</h1>"
 
-    return render_template('search_patient.html')
+
+    return render_template('search_patient.html', allp=allp)
 
 @app.route('/billing', methods=['GET', 'POST'])
 def billing():
-    #today = datetime.today().strftime('%Y-%m-%d')
     today = datetime.now()
     if (session.get('username') or session.get('recepUsername')) or session.get('accounts'):
         if request.method == 'POST':
@@ -333,12 +394,10 @@ def billing():
                     flash('No Active Patients with Entered ID')
 
                 else:
+                    b = pbill.query.filter_by(pat=id).first()
                     flash('Patient Found')
                     x = patient.date
                     y = x.strftime("%d-%m-%Y, %H:%M:%S")
-                    # z = today.strftime("%d-%m-%Y")
-                    # print("Patient ",y)
-                    # print("today", z)
                     delta = ( today - x ).days
                     print(delta)
                     dy = 0
@@ -347,14 +406,13 @@ def billing():
                     else:
                         dy = delta
                     roomtype = patient.tbed
-                    bill = 0
-                    print(roomtype)
-                    if roomtype == 'SingleRoom':
-                        bill = 8000 * dy
-                    elif roomtype == 'SemiSharing':
-                        bill = 4000*dy
-                    else:
-                        bill = 2000*dy
+                    bill = roomBill(roomtype, dy)
+                    try:
+                        update = pbill.query.filter_by(pat=id).update(dict(room=bill))
+                        db.session.commit()
+                    except:
+                        flash("Something went wrong while generating bill")
+                        return redirect(url_for('bg'))
 
                     med = Medicines.query.filter_by(pid = id).all()
                     if med == None:
@@ -379,24 +437,14 @@ def billing():
                         d = 0
                         for j in doc:
                             d += j.charge
-
-
-                        return render_template('billing.html', patient = patient, dy=dy, y=y, bill = bill, med = med, dia = dia, mtot = mtot, tot = tot, i = d, doc=doc)
-
-
+                        return render_template('newbill.html', patient = patient, dy=dy, y=y, bill = bill, med = med, dia = dia, mtot = mtot, tot = tot, i = d, doc=doc, b=b)
             if id == "":
                 flash('Enter  id to search patient')
                 return redirect( url_for('billing') )
-
-
-
-
-
-
     else:
         return redirect( url_for('login') )
 
-    return render_template('billing.html')
+    return render_template('newbill.html')
 
 @app.route('/addMedicine', methods=['GET', 'POST'] )
 def addMedicine():
@@ -592,7 +640,16 @@ def issuemedicine(pid):
                         db.session.commit()
                         mid = patient.mid
                         rate = patient.rate
+                        bill = pbill.query.filter_by(id=pid).first()
+                        tot = rate*qid
+                        if bill == None:
+                            v = pbill(med=tot, pat=pid)
+                            db.session.add(v)
 
+                        else:
+                            newBill = bill.med + int(tot)
+                            new = str(newBill)
+                            row_update = pbill.query.filter_by(pat=pid).update(dict(med=new))
                         rowup = Medicines( mid = mid, pid=pid, mname = mname, rate = rate , qissued=qissued)
                         db.session.add(rowup)
                         db.session.commit()
@@ -731,6 +788,15 @@ def issuediagnostics(pid):
                     flash('Test Found')
                     tid = patient.tid
                     tcharge = patient.tcharge
+                    bill = pbill.query.filter_by(id=pid).first()
+                    if bill == None:
+                        v = pbill(diag=tcharge, pat=pid)
+                        db.session.add(v)
+
+                    else:
+                        newBill = bill.diag + int(tcharge)
+                        new = str(newBill)
+                        row_update = pbill.query.filter_by(pat=pid).update(dict(diag=new))
                     rowup = Diagnostics( tid = tid, pid=pid, tname = tname, tcharge = tcharge )
                     db.session.add(rowup)
                     db.session.commit()
@@ -785,6 +851,47 @@ def deletediadetail(mid):
             return redirect( url_for('delete_diagnostics') )
 
 
+@app.route('/updateDiagnostics')
+def updatediag():
+    if (session.get('username') or session.get('lab')):
+
+        updatep = DiagnosticsMaster.query.all()
+        print(updatep)
+        if not updatep:
+            flash('No Medicines exists in database')
+            return redirect( url_for('addDiagnostics') )
+        else:
+            print("inside else")
+            return render_template('updateDiagnostics.html', updatep = updatep)
+
+    else:
+        # flash('You have been logged out. Please login again')
+        # return redirect( url_for('login') )
+        return "<h1>You do not have permission to perform this action. Please go back</h1>"
+
+
+@app.route('/updatediadetails/<mid>', methods=['GET', 'POST'] )
+def updatediadetails(mid):
+    if (session.get('username') or session.get('lab')):
+        editpat = DiagnosticsMaster.query.filter_by( tid = mid )
+        if request.method == 'POST':
+            mname = request.form['mname']
+            rate = request.form['rate']
+            row_update = DiagnosticsMaster.query.filter_by( tid = mid ).update(dict(tname=mname, tcharge=rate))
+            db.session.commit()
+            try:
+                storeActivity(session['username'], "Diagnostics Details Modified: " + mname)
+            except:
+                pass
+            if row_update == None:
+                flash('Something Went Wrong')
+                return redirect( url_for('diagnosticsstatus') )
+            else:
+                flash('Diagnostics update initiated successfully')
+                return redirect( url_for('diagnosticsstatus') )
+
+        return render_template('editdiadetails.html', editpat=editpat)
+
 
 
 @app.route('/generatebill/<id>')
@@ -795,6 +902,7 @@ def generatebill(id):
     patient = Patients.query.filter_by(id=id).first()
     dia = Diagnostics.query.filter_by(pid=id).all()
     doc = DoctorVisit.query.filter_by(pid=id).all()
+    b = pbill.query.filter_by(pat=id).first()
     y = 0
     bill = 0
     mtot = 0
@@ -869,16 +977,14 @@ def generatebill(id):
         else:
             html = render_template(
                 "printbill.html",
-                patient=patient, dy=dy, y=y, bill=bill, med=med, dia=dia, mtot=mtot, tot=tot, i=d, doc=doc
+                patient=patient, dy=dy, y=y, bill=bill, med=med, dia=dia, mtot=mtot, tot=tot, i=d, doc=doc, b=b
             )
             css = ['application/static/css/main.css']
             pdf = pdfkit.from_string(html, False, configuration=pdfkit_config, css=css)
             response = make_response(pdf)
             response.headers["Content-Type"] = "application/pdf"
-            #response.headers["Content-Disposition"] = "inline; filename=output.pdf"
-
             response.headers['Content-Disposition'] = \
-                'inline; filename=%s.pdf' % 'yourfilename'
+                'inline; filename=%s.pdf' % 'output'
             return response
 
 
@@ -1049,6 +1155,15 @@ def doctor_visit():
             pid = request.form['pid']
             fee = request.form['fee']
             dc = Patients.query.filter_by(id=pid).first()
+            bill = pbill.query.filter_by(id=pid).first()
+            if bill == None:
+                v = pbill(doc=fee, pat=pid)
+                db.session.add(v)
+
+            else:
+                newBill = bill.doc + int(fee)
+                new = str(newBill)
+                row_update = pbill.query.filter_by( pat = pid ).update(dict(doc=new))
             if dc == None:
                 flash("No patients found with this patient ID")
                 return redirect(url_for('doctor_visit'))
@@ -1065,5 +1180,50 @@ def doctor_visit():
 
     return render_template('docVisit.html')
 
-    
+
+@app.route('/discount/<id>', methods=['GET', 'POST'])
+def discount(id):
+    if session.get('username') or session.get('accounts'):
+        if request.method == "POST":
+            discount = request.form['discount']
+            p = pbill.query.filter_by(pat=id).first()
+            bill = (p.doc + p.room + p.med + p.diag) - (p.discount + p.paid)
+            if int(discount) < 1:
+                flash("Discount cannot be less than 1")
+                return redirect(url_for("bg"))
+            elif float(discount) > ((bill*50) / 100):
+                flash("Discount cannot be greater than 50%")
+                return redirect(url_for('billing'))
+            else:
+                row_update = pbill.query.filter_by(pat=id).update(dict(discount=discount))
+                try:
+                    db.session.commit()
+                    flash("Discount has been added successfully")
+                    return redirect(url_for('billing'))
+                except:
+                    flash("Couldn't add discount.")
+                    return redirect(url_for('billing'))
+    else:
+        return redirect(url_for('login'))
+@app.route('/paybill/<id>', methods=['GET', 'POST'])
+def paybill(id):
+    if session.get('username') or session.get('accounts'):
+        if request.method == "POST":
+            amount = request.form['amount']
+            p = pbill.query.filter_by(pat=id).first()
+            bill = (p.doc + p.room + p.med + p.diag) - (p.discount + p.paid)
+            if int(amount) > bill:
+                flash("Bill pay amount cannot be greater than the bill itself")
+                return redirect(url_for('billing'))
+            row = pbill.query.filter_by(pat=id).update(dict(paid=amount))
+            try:
+                db.session.commit()
+                flash("Bill paid successfully")
+                return redirect(url_for('billing'))
+            except:
+                flash("Couldn't pay bill")
+                return redirect(url_for('billing'))
+
+    else:
+        return redirect(url_for('login'))
 

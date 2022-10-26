@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 
-{% block title %} Edit Patient {% endblock %} 
+{% block title %} Employee List {% endblock %}
 
 {% block content %} 
 
@@ -14,7 +14,10 @@
         position: absolute;
         left: 150px;
     } */
+
+
 </style>
+
 <div class="form1">
     {% with messages = get_flashed_messages() %}
         {% if messages %}
@@ -23,20 +26,95 @@
             {% endfor %}
         {% endif %}
     {% endwith%}
+    <div style="text-align:center;">
     <h1 style="color: rgb(11, 29, 129); text-align: center;">Employee Details </h1>
     <img src="/static/ephotos/{{ employee.ephoto }}" height="300px" width="300px" />
-    <h2>Employee Name: {{ employee.ename }}</h2>
-    <h3>Employee ID: {{employee.empid}}</h3>
-    <h3>Employee Designation: {{employee.edesignation}}</h3>
-    <h3>Employee Contact: {{employee.ecnum}}</h3>
-    <h3>Employee DOB: {{employee.edob}}</h3>
-    <h3>Father's Name: {{employee.efname}}</h3>
-    <h3>Mother's Name: {{employee.emname}}</h3>
-    <h3>Employee NID: {{employee.enid}}</h3>
-    <h3>Address: {{employee.epaddress}}</h3>
-    <h3>Perm Address: {{employee.paddr}}</h3>
-    <h3>Education Background: {{employee.eedu}}</h3>
-    <h3>Prev Job Info: {{employee.ejobinfo}}</h3>
+    <h2>{{ employee.ename }}</h2>
+    </div>
+<!--    <table>-->
+<!--        <tr>-->
+<!--            <th>Employee ID</th>-->
+<!--            <th>Designation</th>-->
+<!--            <th>Contact</th>-->
+<!--            <th>Date of Birth</th>-->
+<!--            <th>Father's Name</th>-->
+<!--            <th>Mother's Name</th>-->
+<!--            <th>NID</th>-->
+<!--            <th>Address</th>-->
+<!--            <th>Permanent Address</th>-->
+<!--            <th>Educational Background</th>-->
+<!--            <th>Prev Job</th>-->
+<!--        </tr>-->
+
+<!--        <tr>-->
+<!--            <th>{{employee.empid}}</th>-->
+<!--            <th>{{employee.edesignation}}</th>-->
+<!--            <th>{{employee.ecnum}}</th>-->
+<!--            <th>{{employee.edob}}</th>-->
+<!--            <th>{{employee.efname}}</th>-->
+<!--            <th>{{employee.emname}}</th>-->
+<!--            <th>{{employee.enid}}</th>-->
+<!--            <th>{{employee.epaddress}}</th>-->
+<!--            <th>{{employee.paddr}}</th>-->
+<!--            <th>{{employee.eedu}}</th>-->
+<!--            <th>{{employee.ejobinfo}}</th>-->
+<!--        </tr>-->
+<!--    </table>-->
+
+
+    <table class="table emp" style="width:100%;">
+  <thead class="thead-dark">
+    <tr>
+            <th>Employee ID</th>
+            <td scope="row">{{employee.empid}}</td>
+
+    </tr>
+    <tr>
+        <th>Designation</th>
+        <td scope="row">{{employee.edesignation}}</td>
+    </tr>
+    <tr>
+        <th>Contact</th>
+        <td scope="row">{{employee.ecnum}}</td>
+    </tr>
+
+    <tr>
+        <th>Date of Birth</th>
+        <td scope="row">{{employee.edob}}</td>
+    </tr>
+    <tr>
+        <th>Father's Name</th>
+        <td scope="row">{{employee.efname}}</td>
+    </tr>
+    <tr>
+        <th>Mother's Name</th>
+        <td scope="row">{{employee.emname}}</td>
+    </tr>
+    <tr>
+        <th>NID</th>
+        <td scope="row">{{employee.enid}}</td>
+    </tr>
+    <tr>
+        <th>Address</th>
+        <td scope="row">{{employee.epaddress}}</td>
+    </tr>
+    <tr>
+        <th>Permanent Address</th>
+        <td scope="row">{{employee.paddr}}</td>
+    </tr>
+    <tr>
+        <th>Educational Background</th>
+        <td scope="row">{{employee.eedu}}</td>
+    </tr>
+
+    <tr>
+        <th>Previous Job</th>
+        <td scope="row">{{employee.ejobinfo}}</td>
+    </tr>
+  </thead>
+
+</table>
+
 
 </div>
 

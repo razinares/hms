@@ -7,11 +7,6 @@ migrate = Migrate(app, db)
 
 
 
-
-
-
-
-
 class Userstore(db.Model):
     __tablename__ = 'userstore'
     id = db.Column(db.Integer, primary_key=True)
@@ -68,6 +63,7 @@ class Patients(db.Model):
     issue = db.Column(db.String(100))
     pcontact = db.Column(db.String(20))
     assoc_contact = db.Column(db.String(20))
+    room = db.Column(db.String(9))
 
     # children = relationship("Medicines")
     # children1 = relationship("Diagnostics")
@@ -114,4 +110,21 @@ class DoctorVisit(db.Model):
     dname = db.Column(db.String(20))
     charge = db.Column(db.Integer)
     date = db.Column(db.DateTime, default=datetime.now())
+
+
+
+class pbill(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    room = db.Column(db.Integer, nullable=False, default=0)
+    diag = db.Column(db.Integer, nullable=False, default=0)
+    doc = db.Column(db.Integer, nullable=False, default=0)
+    med = db.Column(db.Integer, nullable=False, default=0)
+    date = db.Column(db.DateTime, default=datetime.now())
+    pat = db.Column(db.Integer, nullable=False, unique=True)
+    paid = db.Column(db.Integer, nullable=False, default=0)
+    discount = db.Column(db.Integer, nullable=False, default=0)
+
+
+
+
 

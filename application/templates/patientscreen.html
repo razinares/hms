@@ -30,6 +30,7 @@
             <th>ADDRESS</th>
             <th>PATIENT PROBLEM</th>
             <th>STATUS</th>
+            <th>BED NO</th>
             <th>ADMITTED ON</th>
             <th>LAST UPDATE</th>
             <th></th>
@@ -47,6 +48,7 @@
             <td> {{ update.address }}</td>
             <td> {{ update.issue }} </td>
             <td> {{ update.status }} </td>
+            <td> {{ update.assignBed }} </td>
             <td> {{ update.date }} </td>
             <td> {{ update.ldate }} </td>
             <td> <button type="button" class="ubutton" onclick="window.location='editpatientdetail/{{ update.id }}'"> Edit Patient </button> </td>

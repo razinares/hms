@@ -4,51 +4,13 @@ from application.db import *
 import os, sys, subprocess
 import uuid
 import pdfkit
+from application.rooms import *
 
 # ROOM FUNCTIONS
-# Dict for available rooms
-room = {1: {"bed": 20 , "qty": 2, "cost": 2000}, 2: {"bed": 2, "qty": 20, "cost": 4000}, 3: {'bed': 1, 'qty': 10, "cost": 8000}}
 
-# Additional Functions for room
-def rooms():
-    pat = Patients.query.all()
-    a = 0
-    b = 0
-    c = 0
-    for p in pat:
-        if p.tbed == "gen":
-            a += 1
-        elif p.tbed =="semi":
-            b += 1
-        elif p.tbed == "single":
-            c += 1
+# ARRAY OF ROOM AND BEDS
 
-    return {1: a, 2: b, 3: c}
-def availRooms(index):
-    if index == "gen":
-        used = (room[1]['bed']*room[1]['qty']) - rooms()[1]
-    elif index == "semi":
-        used = (room[2]['bed']*room[2]['qty']) - rooms()[2]
-    elif index == "single":
-        used = (room[3]['bed']*room[3]['qty']) - rooms()[3]
-    else:
-        return "Room not provided"
 
-    return used
-def roomBill(index, days):
-    if days == None:
-        days = 1
-    if index == "gen":
-        bill = room[1]['cost'] * days
-    elif index == "semi":
-        bill = room[2]['cost'] * days
-    elif index == "single":
-        bill = room[3]['cost'] * days
-
-    else:
-        bill = 0
-
-    return bill
 # END ROOM FUNCITONS
 
 # Detects System for WKHTMLTOPDF
@@ -186,10 +148,12 @@ def home():
 @app.route('/create_patient', methods=['GET', 'POST'])
 def create_patient():
     if session.get('username') or session.get('recepUsername'):
-        gen = availRooms('gen')
-        semi = availRooms('semi')
-        single = availRooms('single')
+        goom = avlRoom()
+        gen = availRooms('General')
+        semi = availRooms('Semi')
+        single = availRooms('Single')
         if request.method == 'POST':
+            assignBed = request.form['troom']
             nid = request.form['nid']
             pname = request.form['pname']
             age = request.form['age']
@@ -205,7 +169,7 @@ def create_patient():
                 if availRooms(tbed) <= 0:
                     flash("No rooms left")
                     return redirect(url_for('create_patient'))
-                patient = Patients(nid=nid, pname=pname, age=age, tbed=tbed, address=address, status = status, pcontact=pnum, assoc_contact=anum, issue=issue, room=tbed)
+                patient = Patients(nid=nid, pname=pname, age=age, tbed=tbed, address=address, status = status, pcontact=pnum, assoc_contact=anum, issue=issue, room=tbed, assignBed=assignBed)
                 bill = roomBill(tbed, 1)
                 db.session.add(patient)
                 try:
@@ -231,7 +195,7 @@ def create_patient():
                 return redirect( url_for('create_patient') )
     else:
         return "<h1>You do not have permission to perform this action. Please go back</h1>"
-    return render_template('create_patient.html', gen=gen,semi=semi,single=single)
+    return render_template('create_patient.html', gen=gen,semi=semi,single=single, avl=goom)
 
 #UPDATE PATIENT
 @app.route('/update_patient')
@@ -467,9 +431,9 @@ def generatebill(id):
                 dy = delta
             roomtype = patient.tbed
             print(roomtype)
-            if roomtype == 'SingleRoom':
+            if roomtype == 'Single':
                 bill = 8000 * dy
-            elif roomtype == 'SemiSharing':
+            elif roomtype == 'Semi':
                 bill = 4000 * dy
             else:
                 bill = 2000 * dy

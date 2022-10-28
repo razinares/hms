@@ -59,6 +59,7 @@ class Patients(db.Model):
     pcontact = db.Column(db.String(20))
     assoc_contact = db.Column(db.String(20))
     room = db.Column(db.String(9))
+    assignBed = db.Column(db.Integer(), nullable=False)
 
 
 class Medicines(db.Model):

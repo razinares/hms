@@ -395,7 +395,7 @@ def billing():
     else:
         return redirect( url_for('login') )
 
-    return render_template('newbill.html')
+    return render_template('newbill.html', allp=Patients.query.all())
 
 # BILL GENERATE FOR PDF
 @app.route('/generatebill/<id>')
@@ -642,7 +642,7 @@ def PharmacistPatientDetails():
     else:
         return "<h1>You do not have permission to perform this action. Please go back</h1>"
 
-    return render_template('PharmacistPatientDetails.html')
+    return render_template('PharmacistPatientDetails.html', allp=Patients.query.all())
 
 
 # MEDICINE LISTS
@@ -756,6 +756,7 @@ def deletemedicinedetail(mid):
 @app.route('/issuemedicine/<pid>', methods=['GET', 'POST'])
 def issuemedicine(pid):
     if session.get('username') or session.get('pharmacy'):
+        allm = allm=MedicineMaster.query.all()
         if request.method == 'POST':
             mname = request.form['mname']
 
@@ -763,7 +764,7 @@ def issuemedicine(pid):
                 patient = MedicineMaster.query.filter_by( mname = mname).first()
                 if patient == None:
                     flash('No Medicine with this Name exists')
-                    return render_template('issuemedicine.html')
+                    return render_template('issuemedicine.html', allm=allm)
                 else:
                     flash('Medicine found')
                     qissued = request.form['qissued']
@@ -772,7 +773,7 @@ def issuemedicine(pid):
                     print((patient.qavailable) - qid)
                     if(qid > patient.qavailable):
                         flash("Entered Medicine Quantity Unavailable")
-                        return render_template('issuemedicine.html', patient = patient)
+                        return render_template('issuemedicine.html', patient = patient, allm=allm)
                     else:
                         patient.qavailable = patient.qavailable - qid
                         db.session.commit()
@@ -795,16 +796,16 @@ def issuemedicine(pid):
                             storeActivity(session['username'], "Medicine Issued to Patient ID: " + pid)
                         except:
                             pass
-                        return render_template('issuemedicine.html', patient = patient)
+                        return render_template('issuemedicine.html', patient = patient, allm=allm)
 
             if mname == "":
                 flash('Enter  Medicine Name to Search')
-                return render_template('issuemedicine.html')
+                return render_template('issuemedicine.html', allm=allm)
 
     else:
         return "<h1>You do not have permission to perform this action. Please go back</h1>"
 
-    return render_template('issuemedicine.html')
+    return render_template('issuemedicine.html', allm=MedicineMaster.query.all())
 # MEDICINE END
 
 
@@ -843,7 +844,7 @@ def DiagnosticsPatientDetails():
     else:
         return "<h1>You do not have permission to perform this action. Please go back</h1>"
 
-    return render_template('DiagnosticsPatientDetails.html')
+    return render_template('DiagnosticsPatientDetails.html', allp=Patients.query.all())
 
 
 # ADD DIAGNOSTICS
@@ -897,6 +898,7 @@ def diagnosticsstatus():
 @app.route('/issuediagnostics/<pid>', methods=['GET', 'POST'])
 def issuediagnostics(pid):
     if session.get('username') or session.get('lab'):
+        alld = DiagnosticsMaster.query.all()
         if request.method == 'POST':
             tname = request.form['tname']
             
@@ -904,7 +906,7 @@ def issuediagnostics(pid):
                 patient = DiagnosticsMaster.query.filter_by( tname = tname).first()
                 if patient == None:
                     flash('No Test with this Name exists')
-                    return render_template('issuediagnostics.html')
+                    return render_template('issuediagnostics.html', alld=alld)
                 else:
                     flash('Test Found')
                     tid = patient.tid
@@ -925,16 +927,16 @@ def issuediagnostics(pid):
                         storeActivity(session['username'], "Issued Diagnostic to Patient ID: " + pid)
                     except:
                         pass
-                    return render_template('issuediagnostics.html', patient = patient)
+                    return render_template('issuediagnostics.html', patient = patient, alld=alld)
       
             if tname == "":
                 flash('Enter  Test Name to Search')
-                return render_template('issuediagnostics.html')
+                return redirect(url_for('issuediagnostics'))
     
     else:
         return "<h1>You do not have permission to perform this action. Please go back</h1>"
     
-    return render_template('issuediagnostics.html')
+    return render_template('issuediagnostics.html', alld=alld)
 
 
 # DELETE DIAGNOSTICS

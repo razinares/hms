@@ -3,7 +3,9 @@
 {% block title %} Issue Test {% endblock %}
 
 {% block content %} 
-
+<script src="{{ url_for('static', filename='js/jquery.js') }}"></script>
+<link href="{{ url_for('static', filename='css/jquery-ui.css') }}" rel="stylesheet" type="text/css" />
+<script src="{{ url_for('static', filename='js/jquery-ui.js') }}"></script>
 <style>
     /* input {
         position: absolute;
@@ -60,4 +62,37 @@
 
 </div>
 
+<script>
+$( function() {
+    var projects = [
+
+        {% for pat in alld %}
+        {
+            value: "{{pat.tid}}",
+            label: "{{pat.tname}}"
+        },
+
+        {% endfor %}
+    ];
+
+    $( "#tname" ).autocomplete({
+        minLength: 0,
+        source: projects,
+        focus: function( event, ui ) {
+            $( "#tname" ).val( ui.item.label );
+            return false;
+        },
+        select: function( event, ui ) {
+            $( "#tname" ).val( ui.item.label );
+
+            return false;
+        }
+    })
+    .autocomplete( "instance" )._renderItem = function( ul, item ) {
+      return $( "<li>" )
+        .append( "<div>" + item.label + "</div>" )
+        .appendTo( ul );
+    };
+  });
+ </script>
 {% endblock %}

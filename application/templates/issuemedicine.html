@@ -3,6 +3,9 @@
 {% block title %} Issue Medicine {% endblock %}
 
 {% block content %} 
+<script src="{{ url_for('static', filename='js/jquery.js') }}"></script>
+<link href="{{ url_for('static', filename='css/jquery-ui.css') }}" rel="stylesheet" type="text/css" />
+<script src="{{ url_for('static', filename='js/jquery-ui.js') }}"></script>
 
 <style>
     /* input {
@@ -64,5 +67,37 @@
     {% endif %}
 
 </div>
+<script>
+$( function() {
+    var projects = [
 
+        {% for pat in allm %}
+        {
+            value: "{{pat.mid}}",
+            label: "{{pat.mname}}"
+        },
+
+        {% endfor %}
+    ];
+
+    $( "#mname" ).autocomplete({
+        minLength: 0,
+        source: projects,
+        focus: function( event, ui ) {
+            $( "#mname" ).val( ui.item.label );
+            return false;
+        },
+        select: function( event, ui ) {
+            $( "#mname" ).val( ui.item.label );
+
+            return false;
+        }
+    })
+    .autocomplete( "instance" )._renderItem = function( ul, item ) {
+      return $( "<li>" )
+        .append( "<div>" + item.label + "</div>" )
+        .appendTo( ul );
+    };
+  });
+ </script>
 {% endblock %}

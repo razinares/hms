@@ -8,7 +8,7 @@ array = [[[101,102,103,104,105], [106,107,108, 109, 110]], [[201, 202], [203, 20
 
 # Returns available beds array
 def avlRoom():
-    pat = Patients.query.all()
+    pat = Patients.query.filter_by(status="Active").all()
     genroom1 = array[0][0]
     genroom2 = array[0][1]
     semiroom1 = array[1][0]

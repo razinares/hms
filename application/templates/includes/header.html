@@ -115,7 +115,7 @@
             {% if session.get('accounts') %}
             <div class="home"><a href="{{ url_for('home') }}">Home</a></div>
             <div class="home"><a href="{{ url_for('billing') }}">Patient Bill</a></div>
-            <div class="home"><a href="{{ url_for('home') }}">Doctor Visit</a></div>
+            <div class="home"><a href="{{ url_for('doctor_visit') }}">Doctor Visit</a></div>
             {% endif %}
 
             {% if session.get('username') %}

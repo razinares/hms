@@ -462,8 +462,8 @@ def generatebill(id):
     if id == "":
         return redirect(url_for('billing'))
 
-    if session.get('username') or session.get('recepUsername'):
-        stat = 'Active'
+    if session.get('username') or session.get('accounts'):
+        stat = 'Discharged'
         row_update = Patients.query.filter_by( id = id ).update(dict(status = stat))
         db.session.commit()
         try:

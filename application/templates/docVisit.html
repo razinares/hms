@@ -3,6 +3,9 @@
 {% block title %} Add Medicine {% endblock %}
 
 {% block content %}
+<script src="{{ url_for('static', filename='js/jquery.js') }}"></script>
+<link href="{{ url_for('static', filename='css/jquery-ui.css') }}" rel="stylesheet" type="text/css" />
+<script src="{{ url_for('static', filename='js/jquery-ui.js') }}"></script>
         <style>
             /* input {
                 position: absolute;
@@ -22,7 +25,7 @@
                 <label for="dname">Doctor Name*</label>
                 <input type="text" class="text1" id="dname" name="dname" required><br><br>
                 <label for="pid">Patient ID</label>
-                <input type="number" class="text1" id="pid" name="pid" required><br><br>
+                <input type="text" class="text1" id="project" name="pid" required><br><br>
                 <label for="fee">Doctors Fee</label>
                 <input type="number" class="text1" id="fee" name="fee" min="0" required><br><br>
                 <pre>(*)Fields are compulsary</pre>
@@ -39,4 +42,39 @@
         {% endwith%}
         
         </div>
+<script>
+$( function() {
+    var projects = [
+
+        {% for pat in allp %}
+        {
+            value: "{{pat.id}}",
+            label: "{{pat.pname}} ID:{{pat.id}}"
+        },
+
+        {% endfor %}
+    ];
+
+    $( "#project" ).autocomplete({
+        minLength: 0,
+        source: projects,
+        focus: function( event, ui ) {
+            $( "#project" ).val( ui.item.label );
+            return false;
+        },
+        select: function( event, ui ) {
+            $( "#project" ).val( ui.item.value );
+
+            return false;
+        }
+    })
+    .autocomplete( "instance" )._renderItem = function( ul, item ) {
+      return $( "<li>" )
+        .append( "<div>" + item.label + "</div>" )
+        .appendTo( ul );
+    };
+  });
+ </script>
+
+
     {% endblock %}

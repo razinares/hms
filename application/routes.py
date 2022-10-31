@@ -149,9 +149,9 @@ def home():
 def create_patient():
     if session.get('username') or session.get('recepUsername'):
         goom = avlRoom()
-        gen = availRooms('General')
-        semi = availRooms('Semi')
-        single = availRooms('Single')
+        gen = availRooms("General")
+        semi = availRooms("Semi")
+        single = availRooms("Single")
         if request.method == 'POST':
             assignBed = request.form['troom']
             nid = request.form['nid']
@@ -194,7 +194,8 @@ def create_patient():
                 flash('Patient with this NID already exists')
                 return redirect( url_for('create_patient') )
     else:
-        return "<h1>You do not have permission to perform this action. Please go back</h1>"
+        return
+    print(gen)
     return render_template('create_patient.html', gen=gen,semi=semi,single=single, avl=goom)
 
 #UPDATE PATIENT
@@ -233,6 +234,10 @@ def editpatientdetail(id):
     if session.get('username') or session.get('recepUsername'):
         print(datetime.now())
         editpat = Patients.query.filter_by( id = id )
+        goom = avlRoom()
+        gen = availRooms('General')
+        semi = availRooms('Semi')
+        single = availRooms('Single')
         if request.method == 'POST':
             print("inside editpat post mtd")
             pname = request.form['npname']
@@ -240,8 +245,10 @@ def editpatientdetail(id):
             tbed = request.form['tbed']
             address = request.form['naddress']
             status = request.form['status']
+            assignBed = request.form['troom']
             ldate = datetime.today()
-            row_update = Patients.query.filter_by( id = id ).update(dict(pname=pname, age=age, tbed=tbed, address=address, status = status, ldate=ldate))
+
+            row_update = Patients.query.filter_by( id = id ).update(dict(pname=pname, age=age, tbed=tbed, address=address, status = status, ldate=ldate, assignBed=assignBed))
             db.session.commit()
             try:
                 storeActivity(session['username'], "Updated Details for Patient ID: " + id)
@@ -256,7 +263,7 @@ def editpatientdetail(id):
                 flash('Patient update initiated successfully')
                 return redirect( url_for('update_patient') )
 
-        return render_template('editpatientdetail.html', editpat = editpat)
+        return render_template('editpatientdetail.html', editpat = editpat, gen=gen, semi=semi, single=single, avl=goom)
     else:
         return "<h1>You do not have permission to perform this action. Please go back</h1>"
 
@@ -401,17 +408,14 @@ def billing():
 @app.route('/generatebill/<id>')
 def generatebill(id):
     global d
-    dy = 0
+    global mtot,tot, dy ,y, bill
     today = datetime.now()
     med = Medicines.query.filter_by(pid=id).all()
     patient = Patients.query.filter_by(id=id).first()
     dia = Diagnostics.query.filter_by(pid=id).all()
     doc = DoctorVisit.query.filter_by(pid=id).all()
     b = pbill.query.filter_by(pat=id).first()
-    y = 0
-    bill = 0
-    mtot = 0
-    tot = 0
+
     if id != "":
 
         if patient == None:
@@ -425,11 +429,13 @@ def generatebill(id):
             y = x.strftime("%d-%m-%Y, %H:%M:%S")
             delta = (today - x).days
             print(delta)
+            dy = 0
             if delta == 0:
                 dy = 1
             else:
                 dy = delta
             roomtype = patient.tbed
+            bill = roomBill(roomtype, dy)
             print(roomtype)
             if roomtype == 'Single':
                 bill = 8000 * dy
@@ -521,7 +527,7 @@ def doctor_visit():
                 flash("Something went wrong")
                 return redirect(url_for('doctor_visit'))
 
-    return render_template('docVisit.html')
+    return render_template('docVisit.html', allp=Patients.query.all())
 
 
 # DISCOUNT
@@ -533,13 +539,14 @@ def discount(id):
             p = pbill.query.filter_by(pat=id).first()
             bill = (p.doc + p.room + p.med + p.diag) - (p.discount + p.paid)
             if int(discount) < 1:
-                flash("Discount cannot be less than 1")
+                flash("Discount cannot be less than 1%")
                 return redirect(url_for("bg"))
-            elif float(discount) > ((bill * 50) / 100):
+            elif float(discount) > 50:
                 flash("Discount cannot be greater than 50%")
                 return redirect(url_for('billing'))
             else:
-                row_update = pbill.query.filter_by(pat=id).update(dict(discount=discount))
+                dpercent = ((bill * int(discount)) / 100)
+                row_update = pbill.query.filter_by(pat=id).update(dict(discount=dpercent))
                 try:
                     db.session.commit()
                     flash("Discount has been added successfully")
@@ -1163,7 +1170,4 @@ def logout():
     session.clear()
     flash('logged out successfully .')
     return redirect( url_for('login') )
-
-
-
 

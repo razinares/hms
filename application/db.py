@@ -52,8 +52,6 @@ class Patients(db.Model):
     ldate = db.Column(db.DateTime, default=datetime.now)
     tbed = db.Column(db.String(10))
     address = db.Column(db.String(20))
-    # city = db.Column(db.String(20))
-    # state = db.Column(db.String(20))
     status = db.Column(db.String(20))
     issue = db.Column(db.String(100))
     pcontact = db.Column(db.String(20))

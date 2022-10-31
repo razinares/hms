@@ -40,12 +40,22 @@
 
         <label for="Old Address">Old Room:  </label><b> {{ edit.tbed }}</b> <br><br>
 
-        <label for="Bed">New Room*</label>
-                <select id="tbed" class="text1" name="tbed">
-                    <option value="GeneralWard">General Ward</option>
-                    <option value="SemiSharing">Semi Sharing</option>
-                    <option value="SingleRoom">Single Room</option>
-                </select><br><br>
+        <label for="tbed">Room Type*</label>
+                <select id="tbed" class="text1" name="tbed" required>
+                    <option value="gen"></option>
+                </select>
+
+                <label for="tbed">Room Name*</label>
+                <select id="room" class="text1" name="room-no" required>
+                    <option>Choose Room</option>
+
+                </select>
+
+                <label for="tbed">Bed No*</label>
+                <select id="slct3" class="text1" name="troom" required>
+                    <option>Choose Bed</option>
+
+                </select>
 
         <label for="Old Address">Current Patient Status:  </label> <b>{{ edit.status }}</b> <br><br>
         <label for="status">New Patient Status*</label>
@@ -69,5 +79,104 @@
     {% endfor %}
 
 </div>
+<script>
+    let slct1 = document.getElementById('tbed');
+    let slct2 = document.getElementById('room');
+    let slct3 = document.getElementById('slct3');
+    let wards = ['General', 'Semi', 'Single'];
+    let ganja = ['good', 'bad', 'sad'];
+    wards.forEach(function addWards(item){
+        let option = document.createElement('option');
+        option.text = item;
+        option.value = item;
+        slct1.appendChild(option)
+    });
 
+    slct1.onchange = function () {
+        slct2.innerHTML = "<option></option>"
+        if (this.value == "General") {
+            rooms = ['ROOM 1', 'ROOM 2']
+            addToSlct2(rooms);
+
+        } else if (this.value == "Semi") {
+            rooms = ['SEMI-1', 'SEMI-2', 'SEMI-3', 'SEMI-4', 'SEMI-5'];
+            addToSlct2(rooms);
+        } else if (this.value == "Single") {
+            rooms = ['SINGLE-1', 'SINGLE-2', 'SINGLE-3', 'SINGLE-4', 'SINGLE-5'];
+            addToSlct2(rooms);
+        }
+
+    }
+
+
+    slct2.onchange = function () {
+        slct3.innerHTML = "<option></option>"
+        if (this.value == "ROOM 1") {
+            rooms = {{avl[0][0]}}
+            addToSlct3(rooms);
+        }
+        else if (this.value == "ROOM 2"){
+            rooms = {{avl[0][1]}}
+            addToSlct3(rooms);
+        }else if (this.value == "SEMI-1"){
+            rooms = {{avl[1][0]}}
+            addToSlct3(rooms);
+        }else if (this.value == "SEMI-2"){
+            rooms = {{avl[1][1]}}
+            addToSlct3(rooms);
+        }else if (this.value == "SEMI-3"){
+            rooms = {{avl[1][2]}}
+            addToSlct3(rooms);
+        }else if (this.value == "SEMI-4"){
+            rooms = {{avl[1][3]}}
+            addToSlct3(rooms);
+        }else if (this.value == "SEMI-5"){
+            rooms = {{avl[1][4]}}
+            addToSlct3(rooms);
+        }else if (this.value == "SINGLE-1"){
+            rooms = {{avl[2][0]}}
+            addToSlct3(rooms);
+        }else if (this.value == "SINGLE-2"){
+            rooms = {{avl[2][1]}}
+            addToSlct3(rooms);
+        }else if (this.value == "SINGLE-3"){
+            rooms = {{avl[2][2]}}
+            addToSlct3(rooms);
+        }else if (this.value == "SINGLE-4"){
+            rooms = {{avl[2][3]}}
+            addToSlct3(rooms);
+        }else if (this.value == "SINGLE-5"){
+            rooms = {{avl[2][4]}}
+            addToSlct3(rooms);
+
+        }
+
+
+    }
+
+
+
+    function addToSlct2(arr) {
+        arr.forEach(function (item){
+            let option = document.createElement('option');
+            option.text = item;
+            option.value = item;
+            slct2.appendChild(option);
+        });
+    }
+
+    function addToSlct3(arr) {
+        arr.forEach(function (item){
+            let option = document.createElement('option');
+            option.text = item;
+            option.value = item;
+            slct3.appendChild(option);
+        });
+
+
+
+    }
+
+
+</script>
 {% endblock %}

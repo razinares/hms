@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Bill</title>
 
     <style>
         body {
@@ -71,7 +71,7 @@
                 <td> {{ med.qissued }} </td>
                 <td> {{ med.date }} </td>
                 <td> {{ med.rate }}.00 </td>
-                <td> {{ med.qissued * med.rate }}.00 /- </td>
+                <td> {{ med.qissued * med.rate }} /- </td>
             </tr>
             {% else %}
                 <h4>No Medicines issued  </h4>
@@ -96,7 +96,7 @@
                 <td> {{ dia.tid }} </td>
                 <td> {{ dia.tname }} </td>
                 <td> {{ dia.date }} </td>
-                <td> {{ dia.tcharge }}.00 </td>
+                <td> {{ dia.tcharge }} </td>
             </tr>
             {% else %}
                 <h4>No Tests issued  </h4>
@@ -117,7 +117,7 @@
             <tr>
                 <td> {{ doc.dname }} </td>
                 <td> {{ doc.date }} </td>
-                <td> {{ doc.charge }}.00 </td>
+                <td> {{ doc.charge }} </td>
             </tr>
             {% else %}
                 <h4>No Doctors have made visit</h4>
@@ -148,7 +148,7 @@
                     <td> {{ b.doc }} </td>
                     <td> -{{b.discount}} </td>
                     <td> -{{b.paid}} </td>
-                    <td> <strong>{{ (b.room + b.med + b.diag + b.doc ) - (b.paid + b.discount) }}.00/- </strong> </td>
+                    <td> <strong>{{ (b.room + b.med + b.diag + b.doc ) - (b.paid + b.discount) }}/- </strong> </td>
 
                 </tr>
            </table>

@@ -8,6 +8,9 @@ array = [[[101,102,103,104,105], [106,107,108, 109, 110]], [[201, 202], [203, 20
 
 # Returns available beds array
 def avlRoom():
+    array = [[[101, 102, 103, 104, 105], [106, 107, 108, 109, 110]],
+             [[201, 202], [203, 204], [205, 206], [207, 208], [209, 210]], [[301], [302], [303], [304], [305]]]
+
     pat = Patients.query.filter_by(status="Active").all()
     genroom1 = array[0][0]
     genroom2 = array[0][1]
@@ -97,15 +100,16 @@ def avlRoom():
 
 # Gets the number of available rooms
 def availRooms(index):
-    pat = Patients.query.all()
+    array = [[[101, 102, 103, 104, 105], [106, 107, 108, 109, 110]],
+             [[201, 202], [203, 204], [205, 206], [207, 208], [209, 210]], [[301], [302], [303], [304], [305]]]
+    pat = Patients.query.filter_by(status="Active").all()
     avl = 0
     if index == "General":
         a = 0
         for p in pat:
             if p.tbed == "General":
                 a += 1
-        avl = (len(array[0]) * len(array[0][0])) - a
-        b = 0
+        avl = (len(array[0][0]) + len(array[0][1])) - a
     elif index == "Semi":
         b = 0
         for p in pat:
@@ -135,7 +139,7 @@ room = {1: {"bed": 5 , "qty": 2, "cost": 2000}, 2: {"bed": 2, "qty": 5, "cost": 
 
 # Additional Functions for room
 def rooms():
-    pat = Patients.query.all()
+    pat = Patients.query.filter_by(status="Active").all()
     a = 0
     b = 0
     c = 0

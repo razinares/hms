@@ -12,7 +12,7 @@
 
 <!-- jQuery Modal -->
 <script src="{{ url_for ('static', filename='js/jquery.modal.min.js') }}"></script>
-<link rel="stylesheet" href="{{ url_for('static', filename='css/jquery-modal.min.css') }}" />
+<link rel="stylesheet" href="{{ url_for('static', filename='css/jquery.modal.min.css') }}" />
 <style>
     /* input {
         position: absolute;
@@ -74,8 +74,8 @@
         <h1>Pay Bill</h1>
         <form class="form1" method="POST" action="/paybill/{{patient.id}}">
             <label>Paybill</label>
-            <input type="text" class="text"  name="id" id="project"><br><br>
-            <button class="button" type="submit">Search</button>
+            <input type="text" class="text"  name="amount"><br><br>
+            <button class="button" type="submit">Pay</button>
         </form>
     </div>
 
